@@ -75,6 +75,7 @@ class Oca_Asynchronous_Content_Organizer {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+		$this->define_fetcher_hooks();
 
 	}
 
@@ -112,6 +113,11 @@ class Oca_Asynchronous_Content_Organizer {
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-oca-asynchronous-content-organizer-admin.php';
+
+		/**
+		 * The class responsible for defining all ajax content fetcher functionality
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-oca-asynchronous-content-organizer-content-fetcher.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
@@ -153,8 +159,6 @@ class Oca_Asynchronous_Content_Organizer {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-		$this->loader->add_action( 'wp_ajax_nopriv_oca_fetcher', $plugin_admin, 'oca_fetcher' );
-		$this->loader->add_action( 'wp_ajax_oca_fetcher', $plugin_admin, 'oca_fetcher' );
 
 	}
 
@@ -171,6 +175,22 @@ class Oca_Asynchronous_Content_Organizer {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+
+	}
+
+	/**
+	 * Register all of the hooks related to the ajax content fetcher functionality
+	 * of the plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function define_fetcher_hooks() {
+
+		$plugin_fetcher = new Oca_Asynchronous_Content_Organizer_Content_Fetcher( $this->get_plugin_name(), $this->get_version() );
+
+		$this->loader->add_action( 'wp_ajax_nopriv_oca_fetcher', $plugin_fetcher, 'nopriv_fetcher' );
+		$this->loader->add_action( 'wp_ajax_oca_fetcher', $plugin_fetcher, 'fetcher' );
 
 	}
 

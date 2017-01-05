@@ -18,6 +18,24 @@
 class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 
 	/**
+	 * The ID of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $plugin_name    The ID of this plugin.
+	 */
+	private $plugin_name;
+
+	/**
+	 * The version of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $version    The current version of this plugin.
+	 */
+	private $version;
+
+	/**
 	 * The name of function to request
 	 *
 	 * @since 		1.0.0
@@ -53,31 +71,25 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * @access 		private
 	 * @var 		bool 			$use_cache;    The cache behavior for the content: true or false (default)
 	 */
-	
-	private $has_priveleges;
-
-	/**
-	 * The cache behavior for the content.
-	 * 
-	 * Indicates if the content returned by the function should be cached. The default is false (default).
-	 *
-	 * @since 		1.0.0
-	 * @access 		private
-	 * @var 		bool 			$use_cache;    The cache behavior for the content: true or false (default)
-	 */
 	private $use_cache;
 	
 	public $response_status;
-	public $response_content;
-	
-	public function check_privileges() {
-		
+
+	/**
+	 * Initialize the class and set its properties.
+	 *
+	 * @since    1.0.0
+	 * @param      string    $plugin_name       The name of this plugin.
+	 * @param      string    $version    The version of this plugin.
+	 */
+	public function __construct( $plugin_name, $version ) {
+
+		$this->plugin_name = $plugin_name;
+		$this->version = $version;
+
 	}
 	
-	public function request_content() {
-		
-	}
-	
+	/*
 	public function create_cache_key() {
 		
 	}
@@ -102,8 +114,42 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 		
 	}
 	
-	public function return_content() {
+	public function response_management() {
 		
+	}*/
+
+	/**
+	 * Wrapper for functions called by ajax for privileged users
+	 *
+	 * @since    1.0.0
+	 */
+	public function fetcher() {
+    	$function_name = $_POST['function_name'];
+    	$this->function_args = $_POST['function_args'];
+    	if ( isset( $_POST['function_output'] ) && 'return' === $_POST['function_output'] ){
+			echo call_user_func_array( $function_name, $this->function_args );
+    	}
+    	else {
+			call_user_func_array( $function_name, $this->function_args );
+    	}
+		die();
+	}
+
+	/**
+	 * Wrapper for functions called by ajax for non-privileged users
+	 *
+	 * @since    1.0.0
+	 */
+	public function nopriv_fetcher() {
+    	$function_name = $_POST['nopriv_function_name'];
+    	$this->function_args = $_POST['nopriv_function_args'];
+    	if ( isset( $_POST['nopriv_function_output'] ) && 'return' === $_POST['nopriv_function_output'] ){
+			echo call_user_func_array( $function_name, $this->function_args );
+    	}
+    	else {
+			call_user_func_array( $function_name, $this->function_args );
+    	}
+		die();
 	}
 
 }

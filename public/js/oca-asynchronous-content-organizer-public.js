@@ -4,7 +4,8 @@
 // ocaVars:
 	// ajaxUrl
 	// queue
-		// item: priv_name, priv_args, outputBehavior, container, nopriv_name, nopriv_args, trigger, timeout, placing (append, prepend, substitute)
+		// item: priv_name, priv_args, functionOutput, container, nopriv_name, nopriv_args, trigger, timeout, placement (append, prepend, replace)
+
 var ocaDelayedScripts, ocaQueue;
 
 function ocaInit(){
@@ -28,38 +29,39 @@ function ocaProcessQueue(queue) {
 
 function ocaProcessItem(item, index, array) {
 	ocaFetchContent(ocaVars.ajaxUrl, item);
-	
-	
 }
 
 function ocaFetchContent(ajaxUrl, item ) {
 	console.log('ocaFetchContent inicia e');
 	console.log('ocaFetchContent ajaxURL ' + ajaxUrl);
-	console.log('ocaFetchContent item name igual a ' + item.privName);
+	console.log('ocaFetchContent item name igual a ' + item.functionName);
 
 	jQuery.ajax({
 		url: ajaxUrl,
 		type: 'post',
 		data: {
 			action: 'oca_fetcher',
-			priv_name: item.privName,
-			args: item.privArgs,
-			output_behavior: item.outputBehavior,
+			function_name: item.functionName,
+			function_args: item.functionArgs,
+			function_output: item.functionOutput,
+			nopriv_function_name: item.noprivFunctionName,
+			nopriv_function_args: item.noprivFunctionArgs,
+			nopriv_function_output: item.noprivFunctionOutput,
 		},
-		beforeSend: ocaInjectLoader(item.container, item.placing),
+		beforeSend: ocaInjectLoader(item.container, item.placement),
 		success: function( html ) {
-			ocaInjectContent(item.container, item.placing, item.privName, html);
+			ocaInjectContent(item.container, item.placement, item.functionName, html);
 		}
 	});
 	
 }
 
-function ocaInjectLoader(container, placing) {
+function ocaInjectLoader(container, placement) {
 	jQuery(document).scrollTop();
-	if ( 'prepend' === placing ){
+	if ( 'prepend' === placement ){
 		jQuery(container).prepend( '<div class="content-loader">Loading Content...</div>' );
 	}
-	else if ( 'substitute' === placing ){
+	else if ( 'replace' === placement ){
 		jQuery(container).html( '<div class="content-loader">Loading Content...</div>' );
 	}
 	else {
@@ -67,16 +69,16 @@ function ocaInjectLoader(container, placing) {
 	}	
 }
 
-function ocaInjectContent(container, placing, privName, html) {
+function ocaInjectContent(container, placement, functionName, html) {
 	jQuery('.content-loader').remove();
-	if ( 'prepend' === placing ){
-		jQuery(container).prepend( 'retorno de ' + privName  + ' igual a ' + html );
+	if ( 'prepend' === placement ){
+		jQuery(container).prepend( 'retorno de ' + functionName  + ' igual a ' + html );
 	}
-	else if ( 'substitute' === placing ){
-		jQuery(container).html( '<p>retorno de ' + privName  + ' igual a </p>' + html );
+	else if ( 'replace' === placement ){
+		jQuery(container).html( '<p>retorno de ' + functionName  + ' igual a </p>' + html );
 	}
 	else {
-		jQuery(container).append( 'retorno de ' + privName + ' igual a ' + html );
+		jQuery(container).append( 'retorno de ' + functionName + ' igual a ' + html );
 	}
 	
 }

