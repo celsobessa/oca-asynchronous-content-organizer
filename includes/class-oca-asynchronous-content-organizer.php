@@ -153,6 +153,8 @@ class Oca_Asynchronous_Content_Organizer {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'wp_ajax_nopriv_oca_fetcher', $plugin_admin, 'oca_fetcher' );
+		$this->loader->add_action( 'wp_ajax_oca_fetcher', $plugin_admin, 'oca_fetcher' );
 
 	}
 

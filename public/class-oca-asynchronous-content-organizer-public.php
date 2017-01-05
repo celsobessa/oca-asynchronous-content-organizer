@@ -97,6 +97,33 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery' ), $this->version, false );
+		wp_localize_script( $this->plugin_name, 'ocaVars', array(
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'queue' => array(
+				array(
+					'privName' => 'get_the_title',
+					'privArgs' => 1,
+					'noPrivName' => 'get_the_title',
+					'noPrivArgs' => 1,
+					'outputBehavior' => 'return',
+					'container' => '#main',
+					'trigger' => 'window.onload',
+					'timeout' => 30,
+					'placing' => 'append',
+				),
+				array(
+					'privName' => 'wp_dropdown_users',
+					'privArgs' => '',
+					'noPrivName' => 'get_the_title',
+					'noPrivArgs' => 1,
+					'outputBehavior' => 'echo',
+					'container' => '#main',
+					'trigger' => 'window.onload',
+					'timeout' => 30,
+					'placing' => 'prepend',
+				),
+			),
+		));
 
 	}
 
