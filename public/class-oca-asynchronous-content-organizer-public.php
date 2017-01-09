@@ -4,7 +4,7 @@
  * The public-facing functionality of the plugin.
  *
  * @link       https://2aces.com.br
- * @since      1.0.0
+ * @since      0.1.0
  *
  * @package    Oca_Asynchronous_Content_Organizer
  * @subpackage Oca_Asynchronous_Content_Organizer/public
@@ -25,7 +25,7 @@ class Oca_Asynchronous_Content_Organizer_Public {
 	/**
 	 * The ID of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   private
 	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
@@ -34,16 +34,52 @@ class Oca_Asynchronous_Content_Organizer_Public {
 	/**
 	 * The version of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   private
 	 * @var      string    $version    The current version of this plugin.
 	 */
 	private $version;
 
 	/**
+	 * An array with registered functions for processing
+	 *
+	 * @since 		0.2.0
+	 * @access 		private
+	 * @var 		array			$queue   holds the queue of registered functions for OCA
+	 */
+	private $oca_queue;
+
+	/**
+	 * An array with registered functions for processing, in a javascript object friendly notation
+	 *
+	 * @since 		0.2.0
+	 * @access 		private
+	 * @var 		array			$queue   holds the queue of registered functions for OCA
+	 */
+	private $job_queue;
+
+	/**
+	 * An array of hashes of registered functions for processing
+	 *
+	 * @since 		0.2.0
+	 * @access 		private
+	 * @var 		array			$oca_hashes   holds the hashes of registered functions for OCA
+	 */
+	private $oca_hashes;
+
+	/**
+	 * An instance of OCA Queue Manager
+	 *
+	 * @since 		0.2.0
+	 * @access 		public
+	 * @var 		object			$oca_manager   Holds an instance of OCA Queue Manager
+	 */
+	public $oca_manager;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since    1.0.0
+	 * @since    0.2.0
 	 * @param      string    $plugin_name       The name of the plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
@@ -51,13 +87,14 @@ class Oca_Asynchronous_Content_Organizer_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		$this->job_queue = [];
 
 	}
 
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function enqueue_styles() {
 
@@ -80,7 +117,14 @@ class Oca_Asynchronous_Content_Organizer_Public {
 	/**
 	 * Register the JavaScript for the public-facing side of the site.
 	 *
-	 * @since    1.0.0
+	 * Register the JavaScript for the public-facing side of the site and, conditionally, an ocaVars object
+	 * 
+	 * @since    0.1.0
+	 * @since    0.2.0	conditional loading based on queue contents
+	 * @since    0.2.0	enqueue ocaVars object using localize script
+	 * uses $this->parse_job_queue()
+	 * uses $oca_manager->get_queue()
+	 * uses $oca_manager->get_hashes()
 	 */
 	public function enqueue_scripts() {
 
@@ -95,48 +139,50 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
+		global $oca_manager;
+		$this->oca_queue = $oca_manager->get_queue();
+		$this->oca_hashes = $oca_manager->get_hashes();
+		//TODO remove this: echo 'debug enqueue scripts invoked oca_queue equals to ' ;	
+		if ( !empty( $this->oca_queue ) ){
+			//TODO remove this: echo 'debug enqueue';
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery' ), $this->version, false );
+			wp_localize_script( $this->plugin_name, 'ocaVars', array(
+				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+				'queue' => $this->parse_job_queue(),
+			));
+		}
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery' ), $this->version, false );
-		wp_localize_script( $this->plugin_name, 'ocaVars', array(
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-			'queue' => array(
-				array(
-					'functionName' => 'get_the_term_list',
-					'functionArgs' => array(
-						1,
-						'category',
-					),
-					'functionArgsNumber' => 2, 
-					'functionOutput' => 'return',
-					'noprivFunctionName' => 'get_the_title',
-					'noprivFunctionArgs' => 1,
-					'noprivFunctionOutput' => 'return',
-					'container' => '#colophon',
-					'trigger' => 'window.onload',
-					'timeout' => 30,
-					'placement' => 'append',
-				),
-				array(
-					'functionName' => 'wp_dropdown_users',
-					'functionArgs' => array(
-						array(
-						    'show_option_none'        => 'nenhum', // string
-						    'show'                    => 'user_login',
-						),
-					),
-					'functionArgsNumber' => 1,
-					'functionOutput' => 'echo',
-					'noprivFunctionName' => 'get_the_title',
-					'noprivFunctionArgs' => 1,
-					'noprivFunctionOutput' => 'return',
-					'container' => '#main',
-					'trigger' => 'window.onload',
-					'timeout' => 30,
-					'placement' => 'append',
-				),
-			),
-		));
+	}
+	
 
+	/**
+	 * Populate job_queue with content from oca_queue
+	 *
+	 * @since	0.2.0
+	 * @access	private
+	 * @return array $this->job_queue an array with queued functions
+	 */
+	private function parse_job_queue() {
+		$this->oca_queue;
+		if ( empty( $this->oca_queue ) ){
+			return 'error job queue';
+		}
+		foreach ($this->oca_queue as $job){
+			$this->job_queue[] = array(
+				'functionName'			=> $job['function_name'],
+				'functionArgs'			=> $job['function_args'],
+				'functionOutput'		=> $job['function_output'],
+				'noprivFunctionName'	=> $job['nopriv_function_name'],
+				'noprivFunctionArgs'	=> $job['nopriv_function_args'],
+				'noprivFunctionOutput'	=> $job['nopriv_function_output'],
+				'container'				=> $job['container'],
+				'trigger'				=> $job['trigger'],
+				'timeout'				=> $job['timeout'],
+				'placement'				=> $job['placement'],
+			);
+		}
+		
+		return $this->job_queue;
 	}
 
 }

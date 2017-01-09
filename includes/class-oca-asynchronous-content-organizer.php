@@ -7,7 +7,7 @@
  * public-facing side of the site and the admin area.
  *
  * @link       https://2aces.com.br
- * @since      1.0.0
+ * @since      0.1.0
  *
  * @package    Oca_Asynchronous_Content_Organizer
  * @subpackage Oca_Asynchronous_Content_Organizer/includes
@@ -22,9 +22,8 @@
  * Also maintains the unique identifier of this plugin as well as the current
  * version of the plugin.
  *
- * @since      1.0.0
- * @package    Oca_Asynchronous_Content_Organizer
- * @subpackage Oca_Asynchronous_Content_Organizer/includes
+ * @since      0.1.0
+ * @package    Oca_Asynchronous_Content_Organizer/includes
  * @author     2Aces Conteúdo <contato@2aces.com.br>
  */
 class Oca_Asynchronous_Content_Organizer {
@@ -33,7 +32,7 @@ class Oca_Asynchronous_Content_Organizer {
 	 * The loader that's responsible for maintaining and registering all hooks that power
 	 * the plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   protected
 	 * @var      Oca_Asynchronous_Content_Organizer_Loader    $loader    Maintains and registers all hooks for the plugin.
 	 */
@@ -42,7 +41,7 @@ class Oca_Asynchronous_Content_Organizer {
 	/**
 	 * The unique identifier of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   protected
 	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
 	 */
@@ -51,7 +50,7 @@ class Oca_Asynchronous_Content_Organizer {
 	/**
 	 * The current version of the plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   protected
 	 * @var      string    $version    The current version of the plugin.
 	 */
@@ -64,7 +63,8 @@ class Oca_Asynchronous_Content_Organizer {
 	 * Load the dependencies, define the locale, and set the hooks for the admin area and
 	 * the public-facing side of the site.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
+	 * @since    0.2.0	Added define_fetcher_hooks.
 	 */
 	public function __construct() {
 
@@ -92,7 +92,7 @@ class Oca_Asynchronous_Content_Organizer {
 	 * Create an instance of the loader which will be used to register the hooks
 	 * with WordPress.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   private
 	 */
 	private function load_dependencies() {
@@ -120,6 +120,11 @@ class Oca_Asynchronous_Content_Organizer {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-oca-asynchronous-content-organizer-content-fetcher.php';
 
 		/**
+		 * The class responsible for defining all ajax content fetcher functionality
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-oca-asynchronous-content-organizer-queue-manager.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
@@ -135,7 +140,7 @@ class Oca_Asynchronous_Content_Organizer {
 	 * Uses the Oca_Asynchronous_Content_Organizer_i18n class in order to set the domain and to register the hook
 	 * with WordPress.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   private
 	 */
 	private function set_locale() {
@@ -150,7 +155,7 @@ class Oca_Asynchronous_Content_Organizer {
 	 * Register all of the hooks related to the admin area functionality
 	 * of the plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
@@ -166,7 +171,7 @@ class Oca_Asynchronous_Content_Organizer {
 	 * Register all of the hooks related to the public-facing functionality
 	 * of the plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   private
 	 */
 	private function define_public_hooks() {
@@ -182,7 +187,7 @@ class Oca_Asynchronous_Content_Organizer {
 	 * Register all of the hooks related to the ajax content fetcher functionality
 	 * of the plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.2.0
 	 * @access   private
 	 */
 	private function define_fetcher_hooks() {
@@ -197,7 +202,7 @@ class Oca_Asynchronous_Content_Organizer {
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function run() {
 		$this->loader->run();
@@ -207,7 +212,7 @@ class Oca_Asynchronous_Content_Organizer {
 	 * The name of the plugin used to uniquely identify it within the context of
 	 * WordPress and to define internationalization functionality.
 	 *
-	 * @since     1.0.0
+	 * @since     0.1.0
 	 * @return    string    The name of the plugin.
 	 */
 	public function get_plugin_name() {
@@ -217,7 +222,7 @@ class Oca_Asynchronous_Content_Organizer {
 	/**
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
-	 * @since     1.0.0
+	 * @since     0.1.0
 	 * @return    Oca_Asynchronous_Content_Organizer_Loader    Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
@@ -227,11 +232,22 @@ class Oca_Asynchronous_Content_Organizer {
 	/**
 	 * Retrieve the version number of the plugin.
 	 *
-	 * @since     1.0.0
+	 * @since     0.1.0
 	 * @return    string    The version number of the plugin.
 	 */
 	public function get_version() {
 		return $this->version;
 	}
 
+	/**
+	 * Retrieve a Queue Manager instance.
+	 *
+	 * @since     0.2.0
+	 * @return    object    a Queue Manager instance.
+	 */
+	public function get_manager(){
+		//TODO remove this: echo 'debug get_manager nivel 1';
+		return new Oca_Asynchronous_Content_Organizer_Queue_Manager( $this->get_plugin_name(), $this->get_version() );
+	}
+	
 }

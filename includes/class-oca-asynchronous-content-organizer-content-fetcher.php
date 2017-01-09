@@ -4,7 +4,7 @@
  * The content fetcher functionality of the plugin.
  *
  * @link 		http://slushman.com
- * @since 		1.0.0
+ * @since 		0.2.0
  *
  * @package 	Oca_Asynchronous_Content_Organizer/includes
  */
@@ -20,7 +20,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	/**
 	 * The ID of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.2.0
 	 * @access   private
 	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
@@ -29,7 +29,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	/**
 	 * The version of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.2.0
 	 * @access   private
 	 * @var      string    $version    The current version of this plugin.
 	 */
@@ -38,7 +38,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	/**
 	 * The name of function to request
 	 *
-	 * @since 		1.0.0
+	 * @since 		0.2.0
 	 * @access 		private
 	 * @var 		string 			$function_name    The name of the function to request content from.
 	 */
@@ -47,7 +47,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	/**
 	 * The arguments to the function
 	 *
-	 * @since 		1.0.0
+	 * @since 		0.2.0
 	 * @access 		private
 	 * @var 		string 			$function_name    The arguments to be used with the requesting function
 	 */
@@ -56,7 +56,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	/**
 	 * The function output behavior
 	 *
-	 * @since 		1.0.0
+	 * @since 		0.2.0
 	 * @access 		private
 	 * @var 		string 			$function_output    Indicates the function output behavior: echo or return
 	 */
@@ -67,7 +67,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * 
 	 * Indicates if the content returned by the function should be cached. The default is false (default).
 	 *
-	 * @since 		1.0.0
+	 * @since 		0.2.0
 	 * @access 		private
 	 * @var 		bool 			$use_cache;    The cache behavior for the content: true or false (default)
 	 */
@@ -78,7 +78,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since    1.0.0
+	 * @since    0.2.0
 	 * @param      string    $plugin_name       The name of this plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
@@ -121,7 +121,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	/**
 	 * Wrapper for functions called by ajax for privileged users
 	 *
-	 * @since    1.0.0
+	 * @since    0.2.0
 	 */
 	public function fetcher() {
     	$function_name = $_POST['function_name'];
@@ -138,7 +138,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	/**
 	 * Wrapper for functions called by ajax for non-privileged users
 	 *
-	 * @since    1.0.0
+	 * @since    0.2.0
 	 */
 	public function nopriv_fetcher() {
     	$function_name = $_POST['nopriv_function_name'];

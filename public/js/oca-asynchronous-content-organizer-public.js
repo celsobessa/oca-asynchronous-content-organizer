@@ -72,13 +72,13 @@ function ocaInjectLoader(container, placement) {
 function ocaInjectContent(container, placement, functionName, html) {
 	jQuery('.content-loader').remove();
 	if ( 'prepend' === placement ){
-		jQuery(container).prepend( 'retorno de ' + functionName  + ' igual a ' + html );
+		jQuery(container).prepend( '<p>retorno de ' + functionName  + ' igual a </p>' + html );
 	}
 	else if ( 'replace' === placement ){
 		jQuery(container).html( '<p>retorno de ' + functionName  + ' igual a </p>' + html );
 	}
 	else {
-		jQuery(container).append( 'retorno de ' + functionName + ' igual a ' + html );
+		jQuery(container).append( '<p>retorno de ' + functionName  + ' igual a </p>' + html );
 	}
 	
 }
