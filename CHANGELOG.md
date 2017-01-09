@@ -27,6 +27,14 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 	- improve error handling
 - improve documentation
 
+## 0.2.2
+
+### Changed
+- bumped version
+
+### Fixed
+- included changelog since 0.2.0 to git commit message
+
 ## 0.2.1
 
 ### Fixed
