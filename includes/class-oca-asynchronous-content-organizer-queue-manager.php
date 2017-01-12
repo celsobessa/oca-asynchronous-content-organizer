@@ -256,6 +256,9 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 		if ( empty( $args ) ){
 			echo 'error: no arguments provided';
 		}
+		if ( empty( $args['function_name'] ) ){
+			echo 'error: no function_name provided (required)';
+		}
 		// default args for WP_Query
 		$defaults = array( 
 			'function_name'				=> '',
@@ -270,6 +273,15 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 			'timeout'					=> 30,
 			'placement'					=> 'append',
 		);
+		if ( empty($args['nopriv_function_name']) ){
+			$defaults['nopriv_function_name'] = $args['function_name'];
+		}
+		if ( empty($args['nopriv_function_args']) ){
+			$defaults['nopriv_function_args'] = $args['function_args'];
+		}
+		if ( empty($args['nopriv_function_output']) ){
+			$defaults['nopriv_function_output'] = $args['function_output'];
+		}
 	
 		// merges defaults and user provided argument
 		$job_args = wp_parse_args($args, $defaults);

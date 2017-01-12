@@ -145,7 +145,7 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		//TODO remove this: echo 'debug enqueue scripts invoked oca_queue equals to ' ;	
 		if ( !empty( $this->oca_queue ) ){
 			//TODO remove this: echo 'debug enqueue';
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery' ), $this->version, false );
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery' ), $this->version, TRUE );
 			wp_localize_script( $this->plugin_name, 'ocaVars', array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'queue' => $this->parse_job_queue(),

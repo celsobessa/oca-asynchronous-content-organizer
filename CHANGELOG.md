@@ -14,6 +14,8 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Roadmap
 
+- improve defaults for nopriv
+- fix multiple containers
 - cache methods
 - security, sanitization and validation
 - javascript localization

@@ -32,9 +32,6 @@ function ocaProcessItem(item, index, array) {
 }
 
 function ocaFetchContent(ajaxUrl, item ) {
-	console.log('ocaFetchContent inicia e');
-	console.log('ocaFetchContent ajaxURL ' + ajaxUrl);
-	console.log('ocaFetchContent item name igual a ' + item.functionName);
 
 	jQuery.ajax({
 		url: ajaxUrl,
@@ -72,13 +69,13 @@ function ocaInjectLoader(container, placement) {
 function ocaInjectContent(container, placement, functionName, html) {
 	jQuery('.content-loader').remove();
 	if ( 'prepend' === placement ){
-		jQuery(container).prepend( '<p>retorno de ' + functionName  + ' igual a </p>' + html );
+		jQuery(container).prepend( html );
 	}
 	else if ( 'replace' === placement ){
-		jQuery(container).html( '<p>retorno de ' + functionName  + ' igual a </p>' + html );
+		jQuery(container).html( html );
 	}
 	else {
-		jQuery(container).append( '<p>retorno de ' + functionName  + ' igual a </p>' + html );
+		jQuery(container).append( html );
 	}
 	
 }
@@ -89,9 +86,9 @@ else if (window.attachEvent) {
 	window.attachEvent("onload", ocaDelayedScripts);
 }
 else {
-	window.onload = ocaDelayedScripts;
+	window.onload = ocaDelayedScripts();
 };
-ocaDelayedScripts = function delayedScripts(){
+function ocaDelayedScripts(){
 	ocaInit();
 };
 (function( $ ) {
