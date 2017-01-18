@@ -262,10 +262,10 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 		// default args for WP_Query
 		$defaults = array( 
 			'function_name'				=> '',
-			'function_args'				=> '',
+			'function_args'				=> array(''),
 			'function_output'			=> 'return',
 			'nopriv_function_name'		=> '',
-			'nopriv_function_args'		=> '',
+			'nopriv_function_args'		=> array(''),
 			'nopriv_function_output'	=> '',
 			'use_cache'					=> false,
 			'container'					=> '#main',

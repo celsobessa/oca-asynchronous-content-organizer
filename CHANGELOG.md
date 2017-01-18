@@ -14,20 +14,28 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Roadmap
 
-- improve defaults for nopriv
-- fix multiple containers
+
+- ajax timeout
 - cache methods
+- Delay after trigger
+- ajax delay between queue items
 - security, sanitization and validation
-- javascript localization
-- manage which functions already, to avoid multiple clicks in the same button to load the same content over and over
 - better "loading content" placeholder/behavior
-- different triggers
-- different timeout
+- different triggers (domload, click, etc)
+- manage which functions already is being fetched, to avoid multiple clicks in the same button to load the same content over and over
 - remove unnecessary variables and methods
 - improve logic
 	- find alternative to use global
 	- improve error handling
+- javascript localization
 - improve documentation
+
+## 0.2.3
+
+### Fixed
+- roadmap on changelog
+- proper default for function_args and nopriv_function_args
+- plugin version on several files
 
 ## 0.2.2
 
