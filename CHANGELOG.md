@@ -30,6 +30,11 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 - javascript localization
 - improve documentation
 
+## 0.2.4
+
+### Added
+- loader message: enable, disable and customize message
+
 ## 0.2.3
 
 ### Fixed

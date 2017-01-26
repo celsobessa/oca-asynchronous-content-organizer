@@ -72,7 +72,7 @@ class Oca_Asynchronous_Content_Organizer_Public {
 	 *
 	 * @since 		0.2.0
 	 * @access 		public
-	 * @var 		object			$oca_manager   Holds an instance of OCA Queue Manager
+	 * @var 		object			$oca_manager   Holds n instance of OCA Queue Manager
 	 */
 	public $oca_manager;
 
@@ -159,6 +159,7 @@ class Oca_Asynchronous_Content_Organizer_Public {
 	 * Populate job_queue with content from oca_queue
 	 *
 	 * @since	0.2.0
+	 * @since	0.2.4	added loaderEnable and loaderMessage to job array
 	 * @access	private
 	 * @return array $this->job_queue an array with queued functions
 	 */
@@ -179,6 +180,8 @@ class Oca_Asynchronous_Content_Organizer_Public {
 				'trigger'				=> $job['trigger'],
 				'timeout'				=> $job['timeout'],
 				'placement'				=> $job['placement'],
+				'loaderEnable'			=> $job['loaderEnable'],
+				'loaderMessage'			=> $job['loaderMessage'],
 			);
 		}
 		

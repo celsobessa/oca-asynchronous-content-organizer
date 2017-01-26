@@ -247,6 +247,7 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 * 'job arguments invalid' on such cases.
 	 * 
 	 * @since	0.2.0
+	 * @since	0.2.4	added loaderEnable and loaderMessage to argument defaults array
 	 * @access public
 	 * @param array $args	arguments for the OCA job
 	 * @return string 'job added to queue', 'job already on queue' or 'job arguments invalid'
@@ -272,6 +273,8 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 			'triger'					=> 'window.load',
 			'timeout'					=> 30,
 			'placement'					=> 'append',
+			'loaderEnable'				=> false,
+			'loaderMessage'				=> 'loading content...',
 		);
 		if ( empty($args['nopriv_function_name']) ){
 			$defaults['nopriv_function_name'] = $args['function_name'];

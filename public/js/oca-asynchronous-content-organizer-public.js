@@ -1,10 +1,6 @@
 // set Event Listeners
 // =================================================
 'use strict';
-// ocaVars:
-	// ajaxUrl
-	// queue
-		// item: priv_name, priv_args, functionOutput, container, nopriv_name, nopriv_args, trigger, timeout, placement (append, prepend, replace)
 
 var ocaDelayedScripts, ocaQueue;
 
@@ -45,29 +41,39 @@ function ocaFetchContent(ajaxUrl, item ) {
 			nopriv_function_args: item.noprivFunctionArgs,
 			nopriv_function_output: item.noprivFunctionOutput,
 		},
-		beforeSend: ocaInjectLoader(item.container, item.placement),
+		beforeSend: ocaInjectLoader(item.container, item.placement, item.loaderEnable, item.loaderMessage),
 		success: function( html ) {
-			ocaInjectContent(item.container, item.placement, item.functionName, html);
+			ocaInjectContent(item.container, item.placement, item.loaderEnable, item.functionName, html);
 		}
 	});
 	
 }
 
-function ocaInjectLoader(container, placement) {
+function ocaInjectLoader(container, placement, loaderEnable, loaderMessage) {
 	jQuery(document).scrollTop();
-	if ( 'prepend' === placement ){
-		jQuery(container).prepend( '<div class="content-loader">Loading Content...</div>' );
+	console.log('loaderEnable status = ' + loaderEnable);
+	if ( true === loaderEnable ){
+		console.log('loaderEnable entrou');
+		loaderMessage = '<div class="content-loader">' + loaderMessage + '</div>'
+		if ( 'prepend' === placement ){
+			jQuery(container).prepend( loaderMessage );
+		}
+		else if ( 'replace' === placement ){
+			jQuery(container).html( loaderMessage );
+		}
+		else {
+			jQuery(container).append( loaderMessage );
+		}
+		
 	}
-	else if ( 'replace' === placement ){
-		jQuery(container).html( '<div class="content-loader">Loading Content...</div>' );
-	}
-	else {
-		jQuery(container).append( '<div class="content-loader">Loading Content...</div>' );
-	}	
+	console.log('loaderMessage aplicados');
 }
 
-function ocaInjectContent(container, placement, functionName, html) {
-	jQuery('.content-loader').remove();
+function ocaInjectContent(container, placement, loaderEnable, functionName, html) {
+	console.log('loaderEnable =' + loaderEnable);
+	if ( true === loaderEnable ){
+		jQuery('.content-loader').remove();
+	}
 	if ( 'prepend' === placement ){
 		jQuery(container).prepend( html );
 	}
@@ -77,6 +83,7 @@ function ocaInjectContent(container, placement, functionName, html) {
 	else {
 		jQuery(container).append( html );
 	}
+	console.log('html entrou')
 	
 }
 if ( window.addEventListener ) {
@@ -91,35 +98,3 @@ else {
 function ocaDelayedScripts(){
 	ocaInit();
 };
-(function( $ ) {
-	'use strict';
-
-	/**
-	 * All of the code for your public-facing JavaScript source
-	 * should reside in this file.
-	 *
-	 * Note: It has been assumed you will write jQuery code here, so the
-	 * $ function reference has been prepared for usage within the scope
-	 * of this function.
-	 *
-	 * This enables you to define handlers, for when the DOM is ready:
-	 *
-	 * $(function() {
-	 *
-	 * });
-	 *
-	 * When the window is loaded:
-	 *
-	 * $( window ).load(function() {
-	 *
-	 * });
-	 *
-	 * ...and/or other possibilities.
-	 *
-	 * Ideally, it is not considered best practise to attach more than a
-	 * single DOM-ready or window-load handler for a particular page.
-	 * Although scripts in the WordPress core, Plugins and Themes may be
-	 * practising this, we should strive to set a better example in our own work.
-	 */
-
-})( jQuery );
