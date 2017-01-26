@@ -44,7 +44,8 @@ function ocaFetchContent(ajaxUrl, item ) {
 		beforeSend: ocaInjectLoader(item.container, item.placement, item.loaderEnable, item.loaderMessage),
 		success: function( html ) {
 			ocaInjectContent(item.container, item.placement, item.loaderEnable, item.functionName, html);
-		}
+		},
+		timeout: item.timeout
 	});
 	
 }
