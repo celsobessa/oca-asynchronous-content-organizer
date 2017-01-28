@@ -249,6 +249,7 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 * @since	0.2.0
 	 * @since	0.2.4	added loaderEnable and loaderMessage to argument defaults array
 	 * @since	0.2.5	timeout default changed to 60000
+	 * @since	0.2.6	added callback argument/defaults array
 	 * @access public
 	 * @param array $args {
 	 *     arguments for the OCA job
@@ -304,6 +305,7 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 			'placement'					=> 'append',
 			'loaderEnable'				=> false,
 			'loaderMessage'				=> 'loading content...',
+			'callback'					=> false,
 		);
 		if ( empty($args['nopriv_function_name']) ){
 			$defaults['nopriv_function_name'] = $args['function_name'];

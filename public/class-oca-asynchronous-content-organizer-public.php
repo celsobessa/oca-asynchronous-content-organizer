@@ -160,16 +160,18 @@ class Oca_Asynchronous_Content_Organizer_Public {
 	 *
 	 * @since	0.2.0
 	 * @since	0.2.4	added loaderEnable and loaderMessage to job array
+	 * @since	0.2.6	added callback and jobHash to job array
 	 * @access	private
 	 * @return array $this->job_queue an array with queued functions
 	 */
 	private function parse_job_queue() {
-		$this->oca_queue;
 		if ( empty( $this->oca_queue ) ){
 			return 'error job queue';
 		}
+		$index = 0;
 		foreach ($this->oca_queue as $job){
 			$this->job_queue[] = array(
+				'jobHash'				=> $this->oca_hashes[$index],
 				'functionName'			=> $job['function_name'],
 				'functionArgs'			=> $job['function_args'],
 				'functionOutput'		=> $job['function_output'],
@@ -182,7 +184,9 @@ class Oca_Asynchronous_Content_Organizer_Public {
 				'placement'				=> $job['placement'],
 				'loaderEnable'			=> $job['loaderEnable'],
 				'loaderMessage'			=> $job['loaderMessage'],
+				'callback'				=> $job['callback'],
 			);
+			$index++;
 		}
 		
 		return $this->job_queue;

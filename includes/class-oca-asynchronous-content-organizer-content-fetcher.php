@@ -122,10 +122,16 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * Wrapper for functions called by ajax for privileged users
 	 *
 	 * @since    0.2.0
+	 * @since    0.2.6 added bypass support
 	 */
 	public function fetcher() {
     	$function_name = $_POST['function_name'];
     	$this->function_args = $_POST['function_args'];
+    	$this->function_args = $_POST['nopriv_function_args'];
+    	if ( 'bypass' === $function_name ){
+	    	echo 'bypass';
+			die();
+    	}
     	if ( isset( $_POST['function_output'] ) && 'return' === $_POST['function_output'] ){
 			echo call_user_func_array( $function_name, $this->function_args );
     	}
@@ -139,10 +145,15 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * Wrapper for functions called by ajax for non-privileged users
 	 *
 	 * @since    0.2.0
+	 * @since    0.2.6 added bypass support
 	 */
 	public function nopriv_fetcher() {
     	$function_name = $_POST['nopriv_function_name'];
     	$this->function_args = $_POST['nopriv_function_args'];
+    	if ( 'bypass' === $function_name ){
+	    	echo 'bypass';
+			die();
+    	}
     	if ( isset( $_POST['nopriv_function_output'] ) && 'return' === $_POST['nopriv_function_output'] ){
 			echo call_user_func_array( $function_name, $this->function_args );
     	}
