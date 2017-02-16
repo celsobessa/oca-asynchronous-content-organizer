@@ -2,7 +2,36 @@
 // =================================================
 'use strict';
 
-var ocaDelayedScripts, ocaQueue, ocaDebug = false;
+var ocaDelayedScripts, ocaQueue, ocaDebug = false, ls, lsContent;
+
+function testLocalStorageSet(){
+	if (LocalStorage){
+		console.log('LocalStorage encontrado pelo testLocalStorageSet');
+		ls = LocalStorage;
+		console.log(ls);
+		ls.setItem('devices', 'testLocalStorageSet data', 3600);
+	}
+	else{
+		console.log('LocalStorage não encontrado pelo testLocalStorageSet');
+	}
+}
+
+function testLocalStorageGet(){
+	if (LocalStorage){
+		console.log('LocalStorage encontrado pelo testLocalStorageGet');
+		console.log(ls);
+		lsContent = ls.getItem('devices');
+		console.log(lsContent);
+	}
+	else{
+		console.log('LocalStorage não encontrado pelo testLocalStorageGet');
+	}
+}
+
+function testLocalStorageCallback(string){
+	string = string || 'default string';
+	console.log(string);
+}
 
 function storageAvailable(type) {
 	try {
@@ -37,10 +66,15 @@ function ocaProcessQueue(queue) {
 }
 
 function ocaProcessItem(item, index, array) {
-	if ( storageAvailable('localStorage') && false === ocaDebug ) {
-		var cachedHtml = localStorage.getItem('oca-' + item.jobHash);
-		if( cachedHtml ){
-			var html = JSON.parse(cachedHtml);
+	if (LocalStorage) {
+		//console.log('LocalStorage achado');
+		//console.log('LocalStorage.supportsLocalStorage igual a ' + LocalStorage.supportsLocalStorage());
+		//console.log('ocaDebug ' + ocaDebug);
+	}
+	if ( LocalStorage && true === LocalStorage.supportsLocalStorage() && false === ocaDebug ) {
+		var cachedHtml = LocalStorage.getItem('ocax-' + item.jobHash);
+		if( null !== cachedHtml ){
+			var html = cachedHtml;
 			ocaInjectContent(item.container, item.placement, item.loaderEnable, item.functionName, html);
 			ocaRunCallback(item.callback);
 		}
@@ -71,8 +105,8 @@ function ocaFetchContent(ajaxUrl, item ) {
 			ocaInjectContent(item.container, item.placement, item.loaderEnable, item.functionName, html);
 
 			//Create JSON string for storage
-			var jobStorage = JSON.stringify(html);
-			localStorage.setItem('oca-' + item.jobHash, jobStorage);
+			var jobStorage = html;
+			LocalStorage.setItem('ocax-' + item.jobHash, jobStorage, 3600)
 			ocaRunCallback(item.callback);
 		},
 		timeout: item.timeout

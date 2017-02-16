@@ -122,6 +122,7 @@ class Oca_Asynchronous_Content_Organizer_Public {
 	 * @since    0.1.0
 	 * @since    0.2.0	conditional loading based on queue contents
 	 * @since    0.2.0	enqueue ocaVars object using localize script
+	 * @since    0.3.0	added localstoragehelper utility script
 	 * uses $this->parse_job_queue()
 	 * uses $oca_manager->get_queue()
 	 * uses $oca_manager->get_hashes()
@@ -145,7 +146,8 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		//TODO remove this: echo 'debug enqueue scripts invoked oca_queue equals to ' ;	
 		if ( !empty( $this->oca_queue ) ){
 			//TODO remove this: echo 'debug enqueue';
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery' ), $this->version, TRUE );
+			wp_enqueue_script( $this->plugin_name . '-localstoragehelper', plugin_dir_url( __FILE__ ) . 'js/utilities/oca-asynchronous-content-organizer-localstoragehelper.vanilla.js', '', $this->version, TRUE );
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery', $this->plugin_name . '-localstoragehelper' ), $this->version, TRUE );
 			wp_localize_script( $this->plugin_name, 'ocaVars', array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'queue' => $this->parse_job_queue(),
