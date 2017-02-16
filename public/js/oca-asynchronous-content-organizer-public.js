@@ -2,7 +2,7 @@
 // =================================================
 'use strict';
 
-var ocaDelayedScripts, ocaQueue;
+var ocaDelayedScripts, ocaQueue, ocaDebug = false;
 
 function storageAvailable(type) {
 	try {
@@ -35,11 +35,10 @@ function ocaProcessQueue(queue) {
 	ocaQueue.forEach(ocaProcessItem);
 	
 }
-//117 4.1 30.19 9.87 16.66
-//115 4.1 21.67 15.02 19.17
+
 function ocaProcessItem(item, index, array) {
-	if ( storageAvailable('localStorage') ) {
-		var cachedHtml = localStorage.getItem('xplas-' + item.jobHash);
+	if ( storageAvailable('localStorage') && false === ocaDebug ) {
+		var cachedHtml = localStorage.getItem('oca-' + item.jobHash);
 		if( cachedHtml ){
 			var html = JSON.parse(cachedHtml);
 			ocaInjectContent(item.container, item.placement, item.loaderEnable, item.functionName, html);
@@ -73,7 +72,7 @@ function ocaFetchContent(ajaxUrl, item ) {
 
 			//Create JSON string for storage
 			var jobStorage = JSON.stringify(html);
-			localStorage.setItem('xplas-' + item.jobHash, jobStorage);
+			localStorage.setItem('oca-' + item.jobHash, jobStorage);
 			ocaRunCallback(item.callback);
 		},
 		timeout: item.timeout

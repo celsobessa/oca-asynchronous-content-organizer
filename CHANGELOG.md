@@ -14,24 +14,29 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Roadmap
 
-- cache methods
+- better "loading content" placeholder/behavior
+	- early loading if localStorage or maybe using Web Worker / Service Workder
+		- https://addyosmani.com/basket.js/
+		- https://www.smashingmagazine.com/2016/02/making-a-service-worker/
+		-http://humaan.com/localstorage-is-for-fun/
 - Delay after trigger
 - ajax delay between queue items
 - security, sanitization and validation
 	- php
 	- js
-- better "loading content" placeholder/behavior
 - different triggers (domload, click, etc)
-- manage which functions already is being fetched, to avoid multiple clicks in the same button to load the same content over and over
+- manage which function is already being fetched, to avoid multiple clicks in the same button to load the same content over and over
+- backend caching
 - remove unnecessary variables and methods
-- improve logic
+- improve logic / pseudo refactor
 	- find alternative to use global
 	- improve error handling
 		- backend
 		- frontend (including timeout)
+	- improve call back (maybe http://stackoverflow.com/a/4351575/3594287 )
 - javascript localization
 - improve documentation
-- drop jquery
+- drop jquery / pseudo refactor
 
 ## 0.2.6
 

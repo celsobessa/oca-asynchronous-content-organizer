@@ -127,7 +127,6 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	public function fetcher() {
     	$function_name = $_POST['function_name'];
     	$this->function_args = $_POST['function_args'];
-    	$this->function_args = $_POST['nopriv_function_args'];
     	if ( 'bypass' === $function_name ){
 	    	echo 'bypass';
 			die();
