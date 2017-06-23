@@ -127,15 +127,26 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	private $nopriv_function_output;
 
 	/**
-	 * The cache behavior for the content.
+	 * The cache behavior for the content in backend.
 	 * 
-	 * Indicates if the content returned by the function should be cached. The default is false (default).
+	 * Indicates if the content returned by the function should be cached in backend. The default is true.
 	 *
-	 * @since 		0.2.0
+	 * @since 		0.4.0
 	 * @access 		private
-	 * @var 		bool 			$use_cache;    The cache behavior for the content: true or false (default)
+	 * @var 		bool 			$backend_cache;    The cache behavior for the content: true (default) or false.
 	 */
-	private $use_cache;
+	private $backend_cache;
+
+	/**
+	 * The cache behavior for the content in frontend.
+	 * 
+	 * Indicates if the content returned by the function should be cached in frontend. The default is true.
+	 *
+	 * @since 		0.4.0
+	 * @access 		private
+	 * @var 		bool 			$frontend_cache;    The cache behavior for the content: true (default) or false.
+	 */
+	private $frontend_cache;
 
 	/**
 	 * The container for the injected content
@@ -266,8 +277,12 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 *                                          		Default is value of array('') (an empty array).
 	 *     @type array      nopriv_$function_output		The type of behavior the function specified by $nopriv_function_name has: does it echoes or does it return data? If nopriv_function_output is left empty, the same function from $function_name will be used for non-privileged users.
 	 *                                          		Default is value of ''. 
-	 *     @type bool      use_cache					should OCA cache the response (true) or left to the called function decide and work it out (false)?
-	 *                                          		Default is value of false. 
+	 *     @type bool      backend_cache				should OCA cache the response (true) on backend?
+	 *                                          		Default is value of true. 
+	 *     @type bool      frontend_cache				should OCA cache the response (true) in front end or left to the called function decide and work it out (false)?
+	 *                                          		Default is value of true. 
+	 *     @type string    purge_policy					The local_storage cache purging policy, fires before content is applied. Valid values: priv (triggered when a privileged request is served), nopriv, both and none.
+	 *                                          		Default value is none. 
 	 *     @type string    container					An jQuery/CSS3 selector of the element to inject content
 	 *                                          		Default is value '#main' (WordPress default theme main content area)
 	 *     @type string    trigger						A event for triggering the loading processes. For now, it accepts only window.load. Future versions will allow other triggers ad document.load, click, etc.
@@ -298,7 +313,9 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 			'nopriv_function_name'		=> '',
 			'nopriv_function_args'		=> array(''),
 			'nopriv_function_output'	=> '',
-			'use_cache'					=> false,
+			'backend_cache'				=> true,
+			'frontend_cache'			=> true,
+			'purge_policy'				=> 'none', // priv, nopriv, both, none. default: none
 			'container'					=> '#main',
 			'triger'					=> 'window.load',
 			'timeout'					=> 60000,

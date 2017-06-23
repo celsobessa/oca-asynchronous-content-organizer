@@ -63,15 +63,26 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	private $function_output;
 
 	/**
-	 * The cache behavior for the content.
+	 * The cache behavior for the content in backend.
 	 * 
-	 * Indicates if the content returned by the function should be cached. The default is false (default).
+	 * Indicates if the content returned by the function should be cached in backend. The default is true.
 	 *
-	 * @since 		0.2.0
+	 * @since 		0.4.0
 	 * @access 		private
-	 * @var 		bool 			$use_cache;    The cache behavior for the content: true or false (default)
+	 * @var 		bool 			$backend_cache;    The cache behavior for the content: true (default) or false.
 	 */
-	private $use_cache;
+	private $backend_cache;
+
+	/**
+	 * The cache behavior for the content in frontend.
+	 * 
+	 * Indicates if the content returned by the function should be cached in frontend. The default is true.
+	 *
+	 * @since 		0.4.0
+	 * @access 		private
+	 * @var 		bool 			$frontend_cache;    The cache behavior for the content: true (default) or false.
+	 */
+	private $frontend_cache;
 	
 	public $response_status;
 
@@ -127,16 +138,21 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	public function fetcher() {
     	$function_name = $_POST['function_name'];
     	$this->function_args = $_POST['function_args'];
+    	$response['privileges'] = true;
     	if ( 'bypass' === $function_name ){
-	    	echo 'bypass';
+    		$response['payload'] = 'bypass';
+    		echo $response;
 			die();
     	}
     	if ( isset( $_POST['function_output'] ) && 'return' === $_POST['function_output'] ){
-			echo call_user_func_array( $function_name, $this->function_args );
+			$response['payload'] = call_user_func_array( $function_name, $this->function_args );
     	}
     	else {
+	    	ob_start();
 			call_user_func_array( $function_name, $this->function_args );
+			$response['payload'] = ob_get_clean();
     	}
+		echo json_encode( $response );
 		die();
 	}
 
@@ -147,6 +163,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * @since    0.2.6 added bypass support
 	 */
 	public function nopriv_fetcher() {
+		echo 'privileged:false';
     	$function_name = $_POST['nopriv_function_name'];
     	$this->function_args = $_POST['nopriv_function_args'];
     	if ( 'bypass' === $function_name ){

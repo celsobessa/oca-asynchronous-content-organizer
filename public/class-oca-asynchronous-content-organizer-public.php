@@ -180,13 +180,15 @@ class Oca_Asynchronous_Content_Organizer_Public {
 				'noprivFunctionName'	=> $job['nopriv_function_name'],
 				'noprivFunctionArgs'	=> $job['nopriv_function_args'],
 				'noprivFunctionOutput'	=> $job['nopriv_function_output'],
-				'container'				=> $job['container'],
-				'trigger'				=> $job['trigger'],
-				'timeout'				=> $job['timeout'],
-				'placement'				=> $job['placement'],
-				'loaderEnable'			=> $job['loaderEnable'],
-				'loaderMessage'			=> $job['loaderMessage'],
-				'callback'				=> $job['callback'],
+				'backend_cache'        => $job['backend_cache'],
+				'frontend_cache'       => $job['frontend_cache'],
+				'container'            => $job['container'],
+				'trigger'			   => $job['trigger'],
+				'timeout'			   => $job['timeout'],
+				'placement'			   => $job['placement'],
+				'loaderEnable'		   => $job['loaderEnable'],
+				'loaderMessage'		   => $job['loaderMessage'],
+				'callback'			   => $job['callback'],
 			);
 			$index++;
 		}
