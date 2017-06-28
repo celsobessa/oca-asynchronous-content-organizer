@@ -66,41 +66,44 @@ function ocaProcessQueue(queue) {
 }
 
 function ocaManageCache( purge_policy, privileges, item ){
-	if ( 'both' === purge_policy ){
-		if ( false === privileges ) {
-			LocalStorage.removeItem('ocax-priv' + item.jobHash);
-			var cachedHtml = LocalStorage.getItem('ocax-nopriv' + item.jobHash);
-		}
-		else {
-			LocalStorage.removeItem('ocax-nopriv' + item.jobHash);
-			var cachedHtml = LocalStorage.getItem('ocax-priv' + item.jobHash);
-		}
-		if( null !== cachedHtml ){
-			var html = cachedHtml;
-			ocaInjectContent(item.container, item.placement, item.loaderEnable, item.functionName, html);
-			ocaRunCallback(item.callback);
-		}	
+	if ( 'both' === purge_policy || 'priv' !== purge_policy && false === privileges){
+	
+		LocalStorage.removeItem('ocax-priv' + item.jobHash);
+
+		var cachedHtml = LocalStorage.getItem('ocax-nopriv' + item.jobHash);
+
+	} else if ( 'both' === purge_policy || 'nopriv' !== purge_policy && true === privileges){
+
+		LocalStorage.removeItem('ocax-nopriv' + item.jobHash);
+		var cachedHtml = LocalStorage.getItem('ocax-priv' + item.jobHash);
 		
 	}
-	if ( 'priv' !== purge_policy && privileges) {
+
+	if( null !== cachedHtml ){
+
+		var html = cachedHtml;
+		ocaInjectContent(item.container, item.placement, item.loaderEnable, item.functionName, html);
+		ocaRunCallback(item.callback);
+
+	} else {
 		
+		console.log('ocaProcessItem item.purge_policy none else');	
+		ocaFetchContent(ocaVars.ajaxUrl, item);
+
 	}
 	
 }
 
 function ocaProcessItem(item, index, array) {
+	console.log('ocaProcessItem init');
 	if ( true === item.frontend_cache && true === LocalStorage.supportsLocalStorage() && false === ocaDebug ) {
+		console.log('ocaProcessItem item.frontend_cache');	
 		if ( 'none' !== item.purge_policy ){
-			var cachedHtml = LocalStorage.getItem('ocax-' + item.jobHash);
-			if( null !== cachedHtml ){
-				var html = cachedHtml;
-				ocaInjectContent(item.container, item.placement, item.loaderEnable, item.functionName, html);
-				ocaRunCallback(item.callback);
-			}	
-		} else {
-			ocaFetchContent(ocaVars.ajaxUrl, item);
-		}
+		console.log('ocaProcessItem item.purge_policy none');	
+			ocaManageCache( item.purge_policy, privileges, item );
+		} 
 	} else {
+		console.log('ocaProcessItem item.frontend_cache none');	
 		ocaFetchContent(ocaVars.ajaxUrl, item);
 	}
 }
