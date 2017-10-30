@@ -64,7 +64,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 
 	/**
 	 * The cache behavior for the content in backend.
-	 * 
+	 *
 	 * Indicates if the content returned by the function should be cached in backend. The default is true.
 	 *
 	 * @since 		0.4.0
@@ -75,7 +75,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 
 	/**
 	 * The cache behavior for the content in frontend.
-	 * 
+	 *
 	 * Indicates if the content returned by the function should be cached in frontend. The default is true.
 	 *
 	 * @since 		0.4.0
@@ -83,7 +83,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * @var 		bool 			$frontend_cache;    The cache behavior for the content: true (default) or false.
 	 */
 	private $frontend_cache;
-	
+
 	public $response_status;
 
 	/**
@@ -99,34 +99,34 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 		$this->version = $version;
 
 	}
-	
+
 	/*
 	public function create_cache_key() {
-		
+
 	}
-	
+
 	public function check_if_in_cache() {
-		
+
 	}
-	
+
 	public function add_to_cache() {
-		
+
 	}
-	
+
 	public function remove_from_cache() {
-		
+
 	}
-	
+
 	public function sanitize_response() {
-		
+
 	}
-	
+
 	public function error_management() {
-		
+
 	}
-	
+
 	public function response_management() {
-		
+
 	}*/
 
 	/**
@@ -137,22 +137,21 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 */
 	public function fetcher() {
     	$function_name = $_POST['function_name'];
-    	$this->function_args = $_POST['function_args'];
-    	$response['privileges'] = true;
+		$this->function_args = $_POST['function_args'];
     	if ( 'bypass' === $function_name ){
-    		$response['payload'] = 'bypass';
+    		$response = 'bypass';
     		echo $response;
 			die();
     	}
     	if ( isset( $_POST['function_output'] ) && 'return' === $_POST['function_output'] ){
-			$response['payload'] = call_user_func_array( $function_name, $this->function_args );
+			$response = call_user_func_array( $function_name, $this->function_args );
     	}
     	else {
 	    	ob_start();
 			call_user_func_array( $function_name, $this->function_args );
-			$response['payload'] = ob_get_clean();
+			$response = ob_get_clean();
     	}
-		echo json_encode( $response );
+		echo $response;
 		die();
 	}
 

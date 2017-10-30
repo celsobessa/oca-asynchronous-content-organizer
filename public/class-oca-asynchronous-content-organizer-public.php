@@ -118,7 +118,7 @@ class Oca_Asynchronous_Content_Organizer_Public {
 	 * Register the JavaScript for the public-facing side of the site.
 	 *
 	 * Register the JavaScript for the public-facing side of the site and, conditionally, an ocaVars object
-	 * 
+	 *
 	 * @since    0.1.0
 	 * @since    0.2.0	conditional loading based on queue contents
 	 * @since    0.2.0	enqueue ocaVars object using localize script
@@ -143,11 +143,12 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		global $oca_manager;
 		$this->oca_queue = $oca_manager->get_queue();
 		$this->oca_hashes = $oca_manager->get_hashes();
-		//TODO remove this: echo 'debug enqueue scripts invoked oca_queue equals to ' ;	
+		//TODO remove this: echo 'debug enqueue scripts invoked oca_queue equals to ' ;
 		if ( !empty( $this->oca_queue ) ){
 			//TODO remove this: echo 'debug enqueue';
-			wp_enqueue_script( $this->plugin_name . '-localstoragehelper', plugin_dir_url( __FILE__ ) . 'js/utilities/oca-asynchronous-content-organizer-localstoragehelper.vanilla.js', '', $this->version, TRUE );
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery', $this->plugin_name . '-localstoragehelper' ), $this->version, TRUE );
+			wp_enqueue_script( $this->plugin_name . '-localstorage', plugin_dir_url( __FILE__ ) . 'js/utilities/localstorage.js', '', $this->version, TRUE );
+			wp_enqueue_script( $this->plugin_name . '-atomic', plugin_dir_url( __FILE__ ) . 'js/utilities/atomic.min.js', '', $this->version, TRUE );
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery', $this->plugin_name . '-localstorage', $this->plugin_name . '-atomic' ), $this->version, TRUE );
 			wp_localize_script( $this->plugin_name, 'ocaVars', array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'queue' => $this->parse_job_queue(),
@@ -155,7 +156,7 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		}
 
 	}
-	
+
 
 	/**
 	 * Populate job_queue with content from oca_queue
@@ -192,7 +193,7 @@ class Oca_Asynchronous_Content_Organizer_Public {
 			);
 			$index++;
 		}
-		
+
 		return $this->job_queue;
 	}
 
