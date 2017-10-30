@@ -69,7 +69,7 @@ class Oca_Asynchronous_Content_Organizer {
 	public function __construct() {
 
 		$this->plugin_name = 'oca-asynchronous-content-organizer';
-		$this->version = '1.0.0';
+		$this->version = '0.3.0';
 
 		$this->load_dependencies();
 		$this->set_locale();

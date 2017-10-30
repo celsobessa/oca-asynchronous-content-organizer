@@ -63,16 +63,27 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	private $function_output;
 
 	/**
-	 * The cache behavior for the content.
-	 * 
-	 * Indicates if the content returned by the function should be cached. The default is false (default).
+	 * The cache behavior for the content in backend.
 	 *
-	 * @since 		0.2.0
+	 * Indicates if the content returned by the function should be cached in backend. The default is true.
+	 *
+	 * @since 		0.4.0
 	 * @access 		private
-	 * @var 		bool 			$use_cache;    The cache behavior for the content: true or false (default)
+	 * @var 		bool 			$backend_cache;    The cache behavior for the content: true (default) or false.
 	 */
-	private $use_cache;
-	
+	private $backend_cache;
+
+	/**
+	 * The cache behavior for the content in frontend.
+	 *
+	 * Indicates if the content returned by the function should be cached in frontend. The default is true.
+	 *
+	 * @since 		0.4.0
+	 * @access 		private
+	 * @var 		bool 			$frontend_cache;    The cache behavior for the content: true (default) or false.
+	 */
+	private $frontend_cache;
+
 	public $response_status;
 
 	/**
@@ -88,50 +99,59 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 		$this->version = $version;
 
 	}
-	
+
 	/*
 	public function create_cache_key() {
-		
+
 	}
-	
+
 	public function check_if_in_cache() {
-		
+
 	}
-	
+
 	public function add_to_cache() {
-		
+
 	}
-	
+
 	public function remove_from_cache() {
-		
+
 	}
-	
+
 	public function sanitize_response() {
-		
+
 	}
-	
+
 	public function error_management() {
-		
+
 	}
-	
+
 	public function response_management() {
-		
+
 	}*/
 
 	/**
 	 * Wrapper for functions called by ajax for privileged users
 	 *
 	 * @since    0.2.0
+	 * @since    0.2.6 added bypass support
 	 */
 	public function fetcher() {
     	$function_name = $_POST['function_name'];
-    	$this->function_args = $_POST['function_args'];
+		$this->function_args = $_POST['function_args'];
+    	if ( 'bypass' === $function_name ){
+    		$response = 'bypass';
+    		echo $response;
+			die();
+    	}
     	if ( isset( $_POST['function_output'] ) && 'return' === $_POST['function_output'] ){
-			echo call_user_func_array( $function_name, $this->function_args );
+			$response = call_user_func_array( $function_name, $this->function_args );
     	}
     	else {
+	    	ob_start();
 			call_user_func_array( $function_name, $this->function_args );
+			$response = ob_get_clean();
     	}
+		echo $response;
 		die();
 	}
 
@@ -139,10 +159,16 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * Wrapper for functions called by ajax for non-privileged users
 	 *
 	 * @since    0.2.0
+	 * @since    0.2.6 added bypass support
 	 */
 	public function nopriv_fetcher() {
+		echo 'privileged:false';
     	$function_name = $_POST['nopriv_function_name'];
     	$this->function_args = $_POST['nopriv_function_args'];
+    	if ( 'bypass' === $function_name ){
+	    	echo 'bypass';
+			die();
+    	}
     	if ( isset( $_POST['nopriv_function_output'] ) && 'return' === $_POST['nopriv_function_output'] ){
 			echo call_user_func_array( $function_name, $this->function_args );
     	}

@@ -127,15 +127,26 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	private $nopriv_function_output;
 
 	/**
-	 * The cache behavior for the content.
+	 * The cache behavior for the content in backend.
 	 * 
-	 * Indicates if the content returned by the function should be cached. The default is false (default).
+	 * Indicates if the content returned by the function should be cached in backend. The default is true.
 	 *
-	 * @since 		0.2.0
+	 * @since 		0.4.0
 	 * @access 		private
-	 * @var 		bool 			$use_cache;    The cache behavior for the content: true or false (default)
+	 * @var 		bool 			$backend_cache;    The cache behavior for the content: true (default) or false.
 	 */
-	private $use_cache;
+	private $backend_cache;
+
+	/**
+	 * The cache behavior for the content in frontend.
+	 * 
+	 * Indicates if the content returned by the function should be cached in frontend. The default is true.
+	 *
+	 * @since 		0.4.0
+	 * @access 		private
+	 * @var 		bool 			$frontend_cache;    The cache behavior for the content: true (default) or false.
+	 */
+	private $frontend_cache;
 
 	/**
 	 * The container for the injected content
@@ -247,8 +258,43 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 * 'job arguments invalid' on such cases.
 	 * 
 	 * @since	0.2.0
+	 * @since	0.2.4	added loaderEnable and loaderMessage to argument defaults array
+	 * @since	0.2.5	timeout default changed to 60000
+	 * @since	0.2.6	added callback argument/defaults array
 	 * @access public
-	 * @param array $args	arguments for the OCA job
+	 * @param array $args {
+	 *     arguments for the OCA job
+	 *
+	 *     @type string     $function_name				Name of the function to be called by privileged users. If nopriv_function_name is empty, the same function from $function_name will be used for non-privileged users.
+	 *                                          		Default is value of '' (empty).
+	 *     @type array      $function_args				an array of arguments for the function specified by $function_name.
+	 *                                          		Default is value of array('') (an empty array).
+	 *     @type array      $function_output			The type of behavior the function specificed by $function_name has: does it echoes or does it return data?
+	 *                                          		Default is value of 'return'.
+	 *     @type string     $nopriv_function_name		Name of the function to be called by non-privileged users. If nopriv_function_name is left empty, the same function from $function_name will be used for non-privileged users.
+	 *                                          		Default is value of '' (empty).
+	 *     @type array      $nopriv_function_args		An array of arguments for the function specified by $nopriv_function_name.
+	 *                                          		Default is value of array('') (an empty array).
+	 *     @type array      nopriv_$function_output		The type of behavior the function specified by $nopriv_function_name has: does it echoes or does it return data? If nopriv_function_output is left empty, the same function from $function_name will be used for non-privileged users.
+	 *                                          		Default is value of ''. 
+	 *     @type bool      backend_cache				should OCA cache the response (true) on backend?
+	 *                                          		Default is value of true. 
+	 *     @type bool      frontend_cache				should OCA cache the response (true) in front end or left to the called function decide and work it out (false)?
+	 *                                          		Default is value of true. 
+	 *     @type string    purge_policy					The local_storage cache purging policy, fires before content is applied. Valid values: priv (triggered when a privileged request is served), nopriv, both and none.
+	 *                                          		Default value is none. 
+	 *     @type string    container					An jQuery/CSS3 selector of the element to inject content
+	 *                                          		Default is value '#main' (WordPress default theme main content area)
+	 *     @type string    trigger						A event for triggering the loading processes. For now, it accepts only window.load. Future versions will allow other triggers ad document.load, click, etc.
+	 *                                          		Default is value 'window.load'
+	 *     @type integer   timeout						A number for jQuery timeout, in miliseconds.
+	 *                                          		Default is value 60000 (60 miliseconds or 60 seconds)
+	 *     @type string    placement					Where the content should be injected: appended, prepended or to replace contente on element specificied by $container
+	 *                                          		Default is value 'apped'
+	 *     @type bool      loaderEnable					Should OCA show a loading message?
+	 *                                          		Default is value false
+	 *     @type string    trigger						The placeholder message while content is being fetched and loaded. It works onlye if #loaderEnable is true
+	 *                                          		Default is value 'loading content...'
 	 * @return string 'job added to queue', 'job already on queue' or 'job arguments invalid'
 	*/
 	public function add_job( $args ) {
@@ -256,20 +302,37 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 		if ( empty( $args ) ){
 			echo 'error: no arguments provided';
 		}
-		// default args for WP_Query
+		if ( empty( $args['function_name'] ) ){
+			echo 'error: no function_name provided (required)';
+		}
+		// default args
 		$defaults = array( 
 			'function_name'				=> '',
-			'function_args'				=> '',
+			'function_args'				=> array(''),
 			'function_output'			=> 'return',
 			'nopriv_function_name'		=> '',
-			'nopriv_function_args'		=> '',
+			'nopriv_function_args'		=> array(''),
 			'nopriv_function_output'	=> '',
-			'use_cache'					=> false,
+			'backend_cache'				=> true,
+			'frontend_cache'			=> true,
+			'purge_policy'				=> 'none', // priv, nopriv, both, none. default: none
 			'container'					=> '#main',
 			'triger'					=> 'window.load',
-			'timeout'					=> 30,
+			'timeout'					=> 60000,
 			'placement'					=> 'append',
+			'loaderEnable'				=> false,
+			'loaderMessage'				=> 'loading content...',
+			'callback'					=> false,
 		);
+		if ( empty($args['nopriv_function_name']) ){
+			$defaults['nopriv_function_name'] = $args['function_name'];
+		}
+		if ( empty($args['nopriv_function_args']) ){
+			$defaults['nopriv_function_args'] = $args['function_args'];
+		}
+		if ( empty($args['nopriv_function_output']) ){
+			$defaults['nopriv_function_output'] = $args['function_output'];
+		}
 	
 		// merges defaults and user provided argument
 		$job_args = wp_parse_args($args, $defaults);

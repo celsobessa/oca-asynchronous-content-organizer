@@ -72,7 +72,7 @@ class Oca_Asynchronous_Content_Organizer_Public {
 	 *
 	 * @since 		0.2.0
 	 * @access 		public
-	 * @var 		object			$oca_manager   Holds an instance of OCA Queue Manager
+	 * @var 		object			$oca_manager   Holds n instance of OCA Queue Manager
 	 */
 	public $oca_manager;
 
@@ -118,10 +118,11 @@ class Oca_Asynchronous_Content_Organizer_Public {
 	 * Register the JavaScript for the public-facing side of the site.
 	 *
 	 * Register the JavaScript for the public-facing side of the site and, conditionally, an ocaVars object
-	 * 
+	 *
 	 * @since    0.1.0
 	 * @since    0.2.0	conditional loading based on queue contents
 	 * @since    0.2.0	enqueue ocaVars object using localize script
+	 * @since    0.3.0	added localstoragehelper utility script
 	 * uses $this->parse_job_queue()
 	 * uses $oca_manager->get_queue()
 	 * uses $oca_manager->get_hashes()
@@ -142,10 +143,12 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		global $oca_manager;
 		$this->oca_queue = $oca_manager->get_queue();
 		$this->oca_hashes = $oca_manager->get_hashes();
-		//TODO remove this: echo 'debug enqueue scripts invoked oca_queue equals to ' ;	
+		//TODO remove this: echo 'debug enqueue scripts invoked oca_queue equals to ' ;
 		if ( !empty( $this->oca_queue ) ){
 			//TODO remove this: echo 'debug enqueue';
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery' ), $this->version, false );
+			wp_enqueue_script( $this->plugin_name . '-localstorage', plugin_dir_url( __FILE__ ) . 'js/utilities/localstorage.js', '', $this->version, TRUE );
+			wp_enqueue_script( $this->plugin_name . '-atomic', plugin_dir_url( __FILE__ ) . 'js/utilities/atomic.min.js', '', $this->version, TRUE );
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery', $this->plugin_name . '-localstorage', $this->plugin_name . '-atomic' ), $this->version, TRUE );
 			wp_localize_script( $this->plugin_name, 'ocaVars', array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'queue' => $this->parse_job_queue(),
@@ -153,35 +156,44 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		}
 
 	}
-	
+
 
 	/**
 	 * Populate job_queue with content from oca_queue
 	 *
 	 * @since	0.2.0
+	 * @since	0.2.4	added loaderEnable and loaderMessage to job array
+	 * @since	0.2.6	added callback and jobHash to job array
 	 * @access	private
 	 * @return array $this->job_queue an array with queued functions
 	 */
 	private function parse_job_queue() {
-		$this->oca_queue;
 		if ( empty( $this->oca_queue ) ){
 			return 'error job queue';
 		}
+		$index = 0;
 		foreach ($this->oca_queue as $job){
 			$this->job_queue[] = array(
+				'jobHash'				=> $this->oca_hashes[$index],
 				'functionName'			=> $job['function_name'],
 				'functionArgs'			=> $job['function_args'],
 				'functionOutput'		=> $job['function_output'],
 				'noprivFunctionName'	=> $job['nopriv_function_name'],
 				'noprivFunctionArgs'	=> $job['nopriv_function_args'],
 				'noprivFunctionOutput'	=> $job['nopriv_function_output'],
-				'container'				=> $job['container'],
-				'trigger'				=> $job['trigger'],
-				'timeout'				=> $job['timeout'],
-				'placement'				=> $job['placement'],
+				'backend_cache'        => $job['backend_cache'],
+				'frontend_cache'       => $job['frontend_cache'],
+				'container'            => $job['container'],
+				'trigger'			   => $job['trigger'],
+				'timeout'			   => $job['timeout'],
+				'placement'			   => $job['placement'],
+				'loaderEnable'		   => $job['loaderEnable'],
+				'loaderMessage'		   => $job['loaderMessage'],
+				'callback'			   => $job['callback'],
 			);
+			$index++;
 		}
-		
+
 		return $this->job_queue;
 	}
 
