@@ -196,6 +196,8 @@ class Oca_Asynchronous_Content_Organizer {
 
 		$this->loader->add_action( 'wp_ajax_nopriv_oca_fetcher', $plugin_fetcher, 'nopriv_fetcher' );
 		$this->loader->add_action( 'wp_ajax_oca_fetcher', $plugin_fetcher, 'fetcher' );
+		$this->loader->add_action( 'wp_ajax_is_user_logged_in', $plugin_fetcher, 'ajax_check_user_logged_in' );
+		$this->loader->add_action( 'wp_ajax_nopriv_is_user_logged_in', $plugin_fetcher, 'ajax_check_user_logged_in' );
 
 	}
 
@@ -249,5 +251,5 @@ class Oca_Asynchronous_Content_Organizer {
 		//TODO remove this: echo 'debug get_manager nivel 1';
 		return new Oca_Asynchronous_Content_Organizer_Queue_Manager( $this->get_plugin_name(), $this->get_version() );
 	}
-	
+
 }

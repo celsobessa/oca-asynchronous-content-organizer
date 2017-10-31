@@ -162,8 +162,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * @since    0.2.6 added bypass support
 	 */
 	public function nopriv_fetcher() {
-		echo 'privileged:false';
-    	$function_name = $_POST['nopriv_function_name'];
+		$function_name = $_POST['nopriv_function_name'];
     	$this->function_args = $_POST['nopriv_function_args'];
     	if ( 'bypass' === $function_name ){
 	    	echo 'bypass';
@@ -175,6 +174,11 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
     	else {
 			call_user_func_array( $function_name, $this->function_args );
     	}
+		die();
+	}
+
+	public function ajax_check_user_logged_in() {
+		echo is_user_logged_in() ? 'priv' : 'nopriv' ;
 		die();
 	}
 

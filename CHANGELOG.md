@@ -14,19 +14,29 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Roadmap
 
+- cache management
+	- cache management logic
+- security, sanitization and validation
+	- php
+	- js
+- Optimize and improve logged in check
+- drop jquery
+	- use chris ferdinandi atomic or other library
+- backend caching
+- better front end caching (maybe use Mozilla Forage)
+- Response type option: JSON using wp_send_json, and wp_send_json_sucess and wp_send_json_error
 - better "loading content" placeholder/behavior
 	- early loading if localStorage or maybe using Web Worker / Service Workder
 		- https://addyosmani.com/basket.js/
 		- https://www.smashingmagazine.com/2016/02/making-a-service-worker/
 		-http://humaan.com/localstorage-is-for-fun/
 - Delay after trigger
-- ajax delay between queue items
-- security, sanitization and validation
+- queue behavior: async / sequential (with/without delay)
+- improve security, sanitization and validation
 	- php
 	- js
-- different triggers (domload, click, etc)
-- manage which function is already being fetched, to avoid multiple clicks in the same button to load the same content over and over
-- backend caching
+- different triggers (download, click, etc)
+	- manage which function is already being fetched, to avoid multiple clicks in the same button to load the same content over and over
 - remove unnecessary variables and methods
 - improve logic / pseudo refactor
 	- find alternative to use global
@@ -34,9 +44,21 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 		- backend
 		- frontend (including timeout)
 	- improve call back (maybe http://stackoverflow.com/a/4351575/3594287 )
+	- improve localStorage usage
 - javascript localization
 - improve documentation
-- drop jquery / pseudo refactor
+- refactor / code improvement
+
+## 0.4.0
+
+### Added
+- Initial Front End Cache Management
+- includes polyfill
+- atomic script (for future use instead of jQuery Ajax)
+- Initial Check login function
+
+### Changed
+- localstorage helperscript filename
 
 ## 0.3.0
 
