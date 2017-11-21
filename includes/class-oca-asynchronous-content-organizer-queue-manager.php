@@ -328,6 +328,7 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 			'placement'					=> 'append',
 			'loaderEnable'				=> false,
 			'loaderMessage'				=> 'loading content...',
+			'loaderMessageWhile'		=> 'loading content...<br><small>(it may take a while)</small>',
 			'callback'					=> false,
 		);
 		if ( empty($args['nopriv_function_name']) ){

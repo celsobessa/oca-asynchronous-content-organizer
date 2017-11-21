@@ -89,13 +89,12 @@ function ocaProcessQueue(queue) {
 
 var ocaManageCache = function ( item ){
 	console.info('ocaManageCache init para job = ', item.jobHash);
-	const frontend_cache = item.frontend_cache;
-	console.info('frontend_cache ', frontend_cache );
-	let cacheRule = frontend_cache.split('|');
+	console.info('item.frontend_cache ', item.frontend_cache );
+	const cacheRule = item.frontend_cache.split('|');
 	console.info('cacheRule ', cacheRule );
 	console.info('privileges', privileges);
-	if ( frontend_cache === 'same' ) {
-		cachePrefix = frontend_cache;
+	if ( cacheRule[0] === 'same' ) {
+		cachePrefix = cacheRule[0];
 		removeCachePrefix = '';
 	} else if ( 'priv' === privileges ){
 		cachePrefix = 'priv';
@@ -105,12 +104,12 @@ var ocaManageCache = function ( item ){
 		removeCachePrefix = 'priv';
 	}
 	console.log('cachePrefix para funcao ' + item.jobHash + ' = ', cachePrefix);
-	if ( frontend_cache !== 'same' && frontend_cache.includes('purge') ) {
+	if ( cacheRule[0] !== 'same' && 'purge' === cacheRule[1] ) {
 		LocalStorage.removeItem('oca-' + removeCachePrefix + '-' + item.jobHash);
 		console.info('LocalStorage.removeItem');
 		console.info('LocalStorage.getItem após removeItem oca-' + removeCachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + removeCachePrefix + '-' + item.jobHash));
 	}
-	if ( frontend_cache === 'both' || frontend_cache === 'same' || cacheRule[0] === privileges ){
+	if ( cacheRule[0] === 'both' || cacheRule[0] === 'same' || cacheRule[0] === privileges ){
 		var cachedHtml = LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash);
 		console.info('cachedHtml = ', cachedHtml);
 		setCache = true;
@@ -127,7 +126,7 @@ var ocaManageCache = function ( item ){
 		ocaRunCallback(item.callback);
 
 	} else {
-		ocaFetchContent(ocaVars.ajaxUrl, item, setCache);
+		ocaFetchContent(ocaVars.ajaxUrl, item, setCache, cachePrefix);
 	}
 }
 
@@ -136,6 +135,9 @@ function ocaProcessItem(item, index, array) {
 	console.info('ocaProcessItem item.frontend_cache ', item.frontend_cache);
 	console.info('ocaProcessItem LocalStorage.supportsLocalStorage ', LocalStorage.supportsLocalStorage() );
 	console.info('ocaProcessItem ocaDebug ', ocaDebug);
+	if ( ocaQueue < 3 && '' !== item.loaderMessageWhile ){
+		item.loaderMessage = item.loaderMessageWhile;
+	}
 	ocaInjectLoader(item.container, item.placement, item.loaderEnable, item.loaderMessage);
 	if ( 'none' !== item.frontend_cache && true === LocalStorage.supportsLocalStorage() && false === ocaDebug ) {
 		console.log('ocaProcessItem item.frontend_cache !== none');
@@ -146,8 +148,12 @@ function ocaProcessItem(item, index, array) {
 	}
 }
 
-function ocaFetchContent(ajaxUrl, item, cacheResponse ) {
-	cacheResponse = cacheResponse || false;
+function ocaFetchContent(ajaxUrl, item, setCache, cachePrefix) {
+	console.info('ocaFetchContent do jobHash', item.jobHash);
+	console.info('setCache em ocaFetchContent', setCache);
+	console.info('cachePrefix em ocaFetchContent', cachePrefix);
+	setCache = setCache || false;
+	cachePrefix = cachePrefix || '';
 	jQuery.ajax({
 		url: ajaxUrl,
 		type: 'post',
@@ -161,15 +167,17 @@ function ocaFetchContent(ajaxUrl, item, cacheResponse ) {
 			nopriv_function_output: item.noprivFunctionOutput,
 		},
 		success: function( response ) {
-			console.info('ajax succes para item.jobHash ' + item.jobHash);
+			console.info('ajax succecs para item.jobHash ' + item.jobHash);
+			console.info('cachePrefix em ajax success', cachePrefix);
+			console.info('setCache em ajax success', setCache);
 			console.info('response', response);
 			ocaInjectContent(item.container, item.placement, item.loaderEnable, item.functionName, response);
 
 			//Create JSON string for storage
 			var jobStorage = response;
-			console.log('cacheResponse status no ajax success' + cacheResponse);
-			if( true === cacheResponse ){
-				console.log('cacheResponse true');
+			console.log('setCache status no ajax success' + setCache);
+			if( true === setCache ){
+				console.log('setCache true');
 				LocalStorage.setItem('oca-' + cachePrefix + '-' + item.jobHash, jobStorage, 3600);
 			}
 			console.info('localStorage maybe set for ' + 'oca-' + cachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash));
