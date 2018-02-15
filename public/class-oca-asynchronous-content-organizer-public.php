@@ -146,9 +146,10 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		//TODO remove this: echo 'debug enqueue scripts invoked oca_queue equals to ' ;
 		if ( !empty( $this->oca_queue ) ){
 			//TODO remove this: echo 'debug enqueue';
+			wp_enqueue_script( $this->plugin_name . '-polyfills', plugin_dir_url( __FILE__ ) . 'js/utilities/polyfills.js', '', $this->version, TRUE );
 			wp_enqueue_script( $this->plugin_name . '-localstorage', plugin_dir_url( __FILE__ ) . 'js/utilities/localstorage.js', '', $this->version, TRUE );
 			wp_enqueue_script( $this->plugin_name . '-atomic', plugin_dir_url( __FILE__ ) . 'js/utilities/atomic.min.js', '', $this->version, TRUE );
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery', $this->plugin_name . '-localstorage', $this->plugin_name . '-atomic' ), $this->version, TRUE );
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery', $this->plugin_name . '-polyfills', $this->plugin_name . '-localstorage', $this->plugin_name . '-atomic' ), $this->version, TRUE );
 			wp_localize_script( $this->plugin_name, 'ocaVars', array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'queue' => $this->parse_job_queue(),
@@ -193,7 +194,6 @@ class Oca_Asynchronous_Content_Organizer_Public {
 			);
 			$index++;
 		}
-
 		return $this->job_queue;
 	}
 
