@@ -24,13 +24,13 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 	- use chris ferdinandi atomic or other library
 - backend caching
 - better front end caching (maybe use Mozilla Forage)
-- Response type option: JSON using wp_send_json, and wp_send_json_sucess and wp_send_json_error
 - better "loading content" placeholder/behavior
 	- early loading if localStorage or maybe using Web Worker / Service Workder
 		- https://addyosmani.com/basket.js/
 		- https://www.smashingmagazine.com/2016/02/making-a-service-worker/
 		-http://humaan.com/localstorage-is-for-fun/
 - Delay after trigger
+- Response type option: JSON using wp_send_json, and wp_send_json_sucess and wp_send_json_error
 - queue behavior: async / sequential (with/without delay)
 - improve security, sanitization and validation
 	- php

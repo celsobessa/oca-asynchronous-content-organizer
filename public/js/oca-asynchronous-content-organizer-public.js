@@ -123,6 +123,7 @@ var ocaManageCache = function ( item ){
 	if( null !== cachedHtml ){
 		var html = cachedHtml;
 		ocaInjectContent(item.container, item.placement, item.loaderEnable, item.functionName, html);
+		ocaItemIsProcessed(item, 'success');
 		ocaRunCallback(item.callback);
 
 	} else {
@@ -135,6 +136,8 @@ function ocaProcessItem(item, index, array) {
 	console.info('ocaProcessItem item.frontend_cache ', item.frontend_cache);
 	console.info('ocaProcessItem LocalStorage.supportsLocalStorage ', LocalStorage.supportsLocalStorage() );
 	console.info('ocaProcessItem ocaDebug ', ocaDebug);
+
+	jQuery(item.container).addClass('oca-waiting');
 	if ( ocaQueue < 3 && '' !== item.loaderMessageWhile ){
 		item.loaderMessage = item.loaderMessageWhile;
 	}
@@ -182,6 +185,7 @@ function ocaFetchContent(ajaxUrl, item, setCache, cachePrefix) {
 			}
 			console.info('localStorage maybe set for ' + 'oca-' + cachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash));
 			ocaRunCallback(item.callback);
+			ocaItemIsProcessed(item, 'success');
 		},
 		timeout: item.timeout
 	});
@@ -221,6 +225,20 @@ function ocaInjectContent(container, placement, loaderEnable, functionName, html
 		jQuery(container).append( html );
 	}
 
+}
+function ocaItemIsProcessed(item, itemStatus) {
+	var itemStatus = itemStatus || '';
+	jQuery( item.container ).removeClass( 'oca-waiting' );
+	if ('error' === itemStatus) {
+		console.log('oca-error para item = ' + item.jobHash);
+		jQuery( item.container ).addClass( 'oca-error' );
+	} else if ( 'success' === itemStatus) {
+		console.log('oca-success para item = ' + item.jobHash);
+		jQuery( item.container ).addClass( 'oca-loaded') ;
+	} else {
+		console.log('oca-unknown para item = ' + item.jobHash);
+		jQuery( item.container ).addClass( 'oca-unknown-status') ;
+	}
 }
 function ocaRunCallback( callback ){
 	if ( false === callback ){
