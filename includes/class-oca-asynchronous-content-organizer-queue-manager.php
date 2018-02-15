@@ -179,7 +179,7 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 *
 	 * @since 		0.2.0
 	 * @access 		private
-	 * @var 		int 			$timeout;    An integer of how long the ajax handler waits. default: 15s.
+	 * @var 		int 			$timeout;    An integer of how long the ajax handler waits. default: 20000ms.
 	 */
 	private $timeout;
 
@@ -261,6 +261,7 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 * @since	0.2.4	added loaderEnable and loaderMessage to argument defaults array
 	 * @since	0.2.5	timeout default changed to 60000
 	 * @since	0.2.6	added callback argument/defaults array
+	 * @since	0.4.0	timeout default changed to 20000
 	 * @access public
 	 * @param array $args {
 	 *     arguments for the OCA job
@@ -295,7 +296,7 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 *     @type string    trigger						A event for triggering the loading processes. For now, it accepts only window.load. Future versions will allow other triggers ad document.load, click, etc.
 	 *                                          		Default is value 'window.load'
 	 *     @type integer   timeout						A number for jQuery timeout, in miliseconds.
-	 *                                          		Default is value 60000 (60 miliseconds or 60 seconds)
+	 *                                          		Default is value 20000 (20000 miliseconds or 20 seconds)
 	 *     @type string    placement					Where the content should be injected: appended, prepended or to replace contente on element specificied by $container
 	 *                                          		Default is value 'apped'
 	 *     @type bool      loaderEnable					Should OCA show a loading message?
@@ -324,7 +325,7 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 			'frontend_cache'			=> 'none', // none, same, both, bothpurge, priv, privpurge, nopriv, noprivpurge. default: none
 			'container'					=> '#main',
 			'triger'					=> 'window.load',
-			'timeout'					=> 60000,
+			'timeout'					=> 20000,
 			'placement'					=> 'append',
 			'loaderEnable'				=> false,
 			'loaderMessage'				=> 'loading content...',
