@@ -14,7 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Roadmap
 
-- cache management
+- improve cache management
 	- cache management logic
 - security, sanitization and validation
 	- php
@@ -25,7 +25,7 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 - backend caching
 - better front end caching (maybe use Mozilla Forage)
 - better "loading content" placeholder/behavior
-	- early loading if localStorage or maybe using Web Worker / Service Workder
+	- early loading if localStorage is supporte or maybe use Web Worker / Service Workder
 		- https://addyosmani.com/basket.js/
 		- https://www.smashingmagazine.com/2016/02/making-a-service-worker/
 		-http://humaan.com/localstorage-is-for-fun/
@@ -48,6 +48,16 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 - javascript localization
 - improve documentation
 - refactor / code improvement
+
+## 0.5.0 WIP
+
+### Added
+- README.md
+- README.txt
+
+### Changed
+- Improved inline documentation
+- minor tweaks
 
 ## 0.4.1
 

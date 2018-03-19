@@ -6,31 +6,31 @@ var ls, lsContent, ocaDelayedScripts, ocaQueue, privileges = false, ocaDebug = f
 
 function testLocalStorageSet(){
 	if (LocalStorage){
-		console.log('LocalStorage found by testLocalStorageSet');
+		//console.log('LocalStorage found by testLocalStorageSet');
 		ls = LocalStorage;
-		console.log(ls);
+		//console.log(ls);
 		ls.setItem('devices', 'testLocalStorageSet data', 3600);
 	}
 	else{
-		console.error('LocalStorage not found by testLocalStorageSet');
+		//console.error('LocalStorage not found by testLocalStorageSet');
 	}
 }
 
 function testLocalStorageGet(){
 	if (LocalStorage){
-		console.log('LocalStorage not found by testLocalStorageGet');
-		console.log(ls);
+		//console.log('LocalStorage not found by testLocalStorageGet');
+		//console.log(ls);
 		lsContent = ls.getItem('devices');
-		console.log(lsContent);
+		//console.log(lsContent);
 	}
 	else{
-		console.error('LocalStorage not found by testLocalStorageGet');
+		//console.error('LocalStorage not found by testLocalStorageGet');
 	}
 }
 
 function testLocalStorageCallback(string){
 	string = string || 'default string';
-	console.log(string);
+	//console.log(string);
 }
 
 function storageAvailable(type) {
@@ -48,17 +48,17 @@ function storageAvailable(type) {
 
 /* deprecate
 function isUserLoggedBak( callback , item ){
-	console.info('isUserLogged');
-	console.info('ocaVars.ajaxUrl', ocaVars.ajaxUrl);
+	//console.info('isUserLogged');
+	//console.info('ocaVars.ajaxUrl', ocaVars.ajaxUrl);
 	jQuery.ajax({
 		url: ocaVars.ajaxUrl,
 		data: {
 			action: 'is_user_logged_in',
 		},
 		success: function( response ) {
-			console.info('isUserLogged response', response);
+			//console.info('isUserLogged response', response);
 			privileges = response;
-			console.info('privileges after isUserLogged ajax success', privileges);
+			//console.info('privileges after isUserLogged ajax success', privileges);
 			callback(item);
 		},
 		error: function() {
@@ -77,7 +77,7 @@ function isUserLogged() {
 			action: 'is_user_logged_in',
 		},
 		success: function (response) {
-			console.info('isUserLogged response', response);
+			//console.info('isUserLogged response', response);
 			return response;
 		},
 		error: function () {
@@ -156,8 +156,24 @@ var ocaManageCache = function ( item ){
 function ocaProcessItem(item, index, array) {
 	//console.info('ocaProcessItem init');
 	//console.info('ocaProcessItem item.frontend_cache ', item.frontend_cache);
-	console.info('ocaProcessItem LocalStorage.supportsLocalStorage ', LocalStorage.supportsLocalStorage() );
+	//console.info('ocaProcessItem LocalStorage.supportsLocalStorage ', LocalStorage.supportsLocalStorage() );
 	//console.info('ocaProcessItem ocaDebug ', ocaDebug);
+
+	// bail if  the user has privileges and function_name is bypass
+	if ( 'priv' === privileges && 'bypass' === item.function_name ){
+		return;
+	}
+
+	// bail if the user has no privileges and nopriv_function_name is bypass;
+	if ( 'nopriv' === privileges && 'bypass' === item.nopriv_function_name ) {
+		return;
+		}
+	}
+
+	// bail if the user has no privileges, nopriv_function_name empty and function_name is bypass
+	if ('nopriv' === privileges && '' === item.nopriv_function_name && 'bypass' === item.function_name) {
+		return;
+	}
 
 	jQuery(item.container).addClass('oca-waiting');
 	if ( ocaQueue < 3 && '' !== item.loaderMessageWhile ){
@@ -270,6 +286,7 @@ function ocaRunCallback( callback ){
 	if (typeof window[callback] === "function"){
 		window[callback]();
 	}
+	return;
 }
 if ( window.addEventListener ) {
 	window.addEventListener('load', ocaDelayedScripts, false);

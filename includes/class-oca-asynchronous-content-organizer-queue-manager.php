@@ -266,30 +266,38 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 * @param array $args {
 	 *     arguments for the OCA job
 	 *
-	 *     @type string     $function_name				Name of the function to be called by privileged users. If nopriv_function_name is empty, the same function from $function_name will be used for non-privileged users.
-	 *                                          		Default is value of '' (empty).
+	 *     @type string     $function_name				Name of the function to be called by privileged users.
+	 * 													If nopriv_function_name is empty, the same function from
+	 * 													$function_name will be used for non-privileged users.
+	 * 													If function name is bypass, it will not trigger the request if the user is
+	 * 													privileged or if the user non-privileged and there's no specificied
+	 * 													nopriv_function_name. Default value is (empty).
 	 *     @type array      $function_args				an array of arguments for the function specified by $function_name.
 	 *                                          		Default is value of array('') (an empty array).
 	 *     @type array      $function_output			The type of behavior the function specificed by $function_name has: does it echoes or does it return data?
 	 *                                          		Default is value of 'return'.
-	 *     @type string     $nopriv_function_name		Name of the function to be called by non-privileged users. If nopriv_function_name is left empty, the same function from $function_name will be used for non-privileged users.
-	 *                                          		Default is value of '' (empty).
+	 *     @type string     $nopriv_function_name		Name of the function to be called by non-privileged users. If
+	 * 													nopriv_function_name is left empty, the same function from
+	 * 													$function_name will be used for non-privileged users.
+	 * 													If $nopriv_function name is 'bypass', it will not trigger the request
+	 * 													if the user is non-privileged. Default value is '' (empty).
 	 *     @type array      $nopriv_function_args		An array of arguments for the function specified by $nopriv_function_name.
 	 *                                          		Default is value of array('') (an empty array).
 	 *     @type array      nopriv_$function_output		The type of behavior the function specified by $nopriv_function_name has: does it echoes or does it return data? If nopriv_function_output is left empty, the same function from $function_name will be used for non-privileged users.
 	 *                                          		Default is value of ''.
 	 *     @type bool      backend_cache				should OCA cache the response (true) on backend?
-	 *                                          		Default is value of true.
-	 *     @type bool      frontend_cache				should OCA cache the response in front end, following what
-	 * 													local_storage cache purging policy, fires before content is applied.
+	 *                                          		Default value is true.
+	 *     @type bool      frontend_cache				should OCA cache the response in front end? following which
+	 * 													cache purging policy? Fires before content is applied. If purge
+	 *													directives are set, content is purged when privileges (status) change
 	 * 													Valid values:
 	 * 													- none: no cache on front-end
-	 * 													- both: a cache for priv and other nopriv. DON'T purge on change
-	 * 													- both|purge: a cache for priv and other nopriv. Purge on change
+	 * 													- both: a cache for priv and other nopriv. DON'T purge on status change
+	 * 													- both|purge: a cache for priv and other nopriv. Purge on status change
 	 * 													- priv: a cache for priv only. DON'T purge on change
 	 * 													- priv|purge: a cache for priv only. Purge on change
-	 * 													- nopriv: a cache for nopriv only. DON'T purge on change
-	 * 													- nopriv|purge: a cache nofor priv only. Purge on change
+	 * 													- nopriv: a cache for nopriv only. DON'T purge on status change
+	 * 													- nopriv|purge: a cache nofor priv only. Purge on status change
 	 *                                          		Default value is none.
 	 *     @type string    container					An jQuery/CSS3 selector of the element to inject content
 	 *                                          		Default is value '#main' (WordPress default theme main content area)

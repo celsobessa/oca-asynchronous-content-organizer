@@ -110,7 +110,13 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/oca-asynchronous-content-organizer-public.css', array(), $this->version, 'all' );
+		global $oca_manager;
+		$this->oca_queue = $oca_manager->get_queue();
+		$this->oca_hashes = $oca_manager->get_hashes();
+		//TODO remove this: echo 'debug enqueue scripts invoked oca_queue equals to ' ;
+		if ( !empty( $this->oca_queue ) ){
+			//wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/oca-asynchronous-content-organizer-public.css', array(), $this->version, 'all' );
+		}
 
 	}
 
