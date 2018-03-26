@@ -695,20 +695,6 @@ Say you want to run a Javascript function after the new content arrives. That's 
         );
 ```
 
-### About Performance, Breakpoint Weights and Triggering Source changes
-
-To avoid reloading smaller videos when you resize the window to an smaller size and you already loaded larger or better videos, the plugin uses breakpoint weights. It means every breakpoint has an integer as weight and the change of the src is triggered only when two conditions are met:
-
-1. the previous breakpoint weight is less than the new breakpoint
-2. the active src attribute URL string is different from the new one
-
-(in the future, it may use an string flag as well. e.g. `loaded` or `not-loaded`)
-
-**You can set your own weights using an options object with the init method**, but if you are planning using the device-based breakpoints from the fixed pixel widths, relative widths and Bootstrap 4 sample stylesheets, it's suggested you keep the default weights. It's easy and useful for most situations.
-
-On the other hand, **if you are planning to use standard media queries** (e.g. @media (min-width: 960px) ) and specially more *complex media queries* (e.g. @media (min-width: 960px) and (orientation: landscape) ), you should set your own weights with the same name as your queries and also use you media queries and the content rule for the :before CSS pseudo-element. It's powerful, but a little bit harder.
-
-
 ## Browser Compatibility
 
 - TO DO
