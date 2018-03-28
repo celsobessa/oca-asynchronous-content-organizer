@@ -85,8 +85,6 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 */
 	private $frontend_cache;
 
-	public $response_status;
-
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -166,10 +164,10 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * @since    0.2.6 added bypass support
 	 */
 	public function nopriv_fetcher() {
-		error_log( 'oca nopriv_fetcher init' );
+		//error_log( 'oca nopriv_fetcher init' );
 		$function_name = $_POST['nopriv_function_name'];
-		error_log( 'oca nopriv_fetcher function_name' );
-		error_log( print_r( $function_name, true) );
+		//error_log( 'oca nopriv_fetcher function_name' );
+		//error_log( print_r( $function_name, true) );
     	$this->function_args = $_POST['nopriv_function_args'];
     	if ( 'bypass' === $function_name ){
 	    	echo 'bypass';
@@ -185,8 +183,15 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	}
 
 	public function ajax_check_user_logged_in() {
-		echo is_user_logged_in() ? 'priv' : 'nopriv' ;
-		die();
+		$user_status = is_user_logged_in() ? 'priv' : 'nopriv' ;
+		$user_data = apply_filters( 'Oca/Fetcher/User/Data', '');
+		$user_info = array(
+			'userStatus'	=> $user_status,
+			'userData'		=> $user_data
+		);
+		wp_send_json_success( $user_info );
+		//echo $user_info;
+		//die();
 	}
 
 }

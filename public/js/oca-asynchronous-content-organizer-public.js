@@ -2,7 +2,7 @@
 // =================================================
 'use strict';
 
-var ls, lsContent, ocaDelayedScripts, ocaQueue, privileges = false, ocaDebug = false, manageCache = true, cachePrefix = '', removeCachePrefix = '', setCache = false;
+var ls, lsContent, ocaDelayedScripts, ocaQueue, userData, privileges = false, ocaDebug = false, manageCache = true, cachePrefix = '', removeCachePrefix = '', setCache = false;
 console.log('privileges after declaration', privileges);
 function testLocalStorageSet(){
 	if (LocalStorage){
@@ -81,8 +81,9 @@ function ocaInit() {
 		},
 		success: function (response) {
 			console.info('OCA checked user status', response);
-			privileges = response;
-			console.info('OCA checked user status and privileges egual', privileges);
+			userData = response.data.userData;
+			privileges = response.data.userStatus;
+			console.info('OCA checked user status and privileges equal response.data.status', privileges);
 			if ( false === privileges || 'string' !== typeof privileges) {
 				console.info('OCA privileges false or not string');
 				return;
@@ -334,11 +335,14 @@ function ocaItemIsProcessed(item, itemStatus) {
 	}
 }
 function ocaRunCallback( callback ){
+	console.log('ocaRunCallback init');
+	console.log('ocaRunCallback callback =', callback);
+	console.log('ocaRunCallback userData =', userData);
 	if ( false === callback ){
 		return;
 	}
 	if (typeof window[callback] === "function"){
-		window[callback]();
+		window[callback](userData);
 	}
 	return;
 }
