@@ -2,7 +2,7 @@
 // =================================================
 'use strict';
 
-var ls, lsContent, ocaDelayedScripts, ocaQueue, userData, privileges = false, ocaDebug = false, manageCache = true, cachePrefix = '', removeCachePrefix = '', setCache = false;
+var ls, lsContent, ocaDelayedScripts, ocaQueue, userData, privileges = false, ocaDebug = false, manageCache = true, cachePrefix = '', removeCachePrefix = '', setCache = false, cacheExpiration = 3600;
 console.log('privileges after declaration', privileges);
 function testLocalStorageSet(){
 	if (LocalStorage){
@@ -108,10 +108,10 @@ function ocaProcessQueue(queue) {
 
 var ocaManageCache = function ( item ){
 	console.info('ocaManageCache init for job = ', item.jobHash);
-	console.info('item.frontend_cache_priv ', item.frontend_cache_priv);
-	console.info('item.frontend_cache_nopriv ', item.frontend_cache_nopriv);
-	const cacheRulePriv = item.frontend_cache_priv;
-	const cacheRuleNopriv = item.frontend_cache_nopriv;
+	console.info('item.frontendCachePriv ', item.frontendCachePriv);
+	console.info('item.frontendCacheNopriv ', item.frontendCacheNopriv);
+	const cacheRulePriv = item.frontendCachePriv;
+	const cacheRuleNopriv = item.frontendCacheNopriv;
 	console.info('cacheRulePriv ', cacheRulePriv);
 	console.info('cacheRuleNopriv', cacheRuleNopriv);
 	console.info('privileges', privileges);
@@ -196,8 +196,8 @@ var ocaManageCacheBak = function ( item ){
 
 function ocaProcessItem(item, index, array) {
 	console.info('ocaProcessItem init');
-	console.info('ocaProcessItem item.frontend_cache_priv ', item.frontend_cache_priv);
-	console.info('ocaProcessItem item.frontend_cache_nopriv ', item.frontend_cache_nopriv);
+	console.info('ocaProcessItem item.frontendCachePriv ', item.frontendCachePriv);
+	console.info('ocaProcessItem item.frontendCacheNopriv ', item.frontendCacheNopriv);
 	console.info('ocaProcessItem LocalStorage.supportsLocalStorage ', LocalStorage.supportsLocalStorage() );
 	console.info('ocaProcessItem ocaDebug ', ocaDebug);
 
@@ -216,22 +216,25 @@ function ocaProcessItem(item, index, array) {
 		return '';
 	}
 
+	if ( item.cacheExpiration && item.cacheExpiration === parseInt(item.cacheExpiration, 10) ){
+		cacheExpiration = item.cacheExpiration;
+	}
 	jQuery(item.container).addClass('oca-waiting');
 	if ( ocaQueue < 3 && '' !== item.loaderMessageWhile ){
 		item.loaderMessage = item.loaderMessageWhile;
 	}
 	ocaInjectLoader(item.container, item.placement, item.loaderEnable, item.loaderMessage);
 
-	// check if item.frontend_cache_nopriv or item.frontend_cache_priv is not false
+	// check if item.frontendCacheNopriv or item.frontendCachePriv is not false
 	// check if debug mode is off
 	// check if local storage is supported
 	if ( true === ocaDebug || true !== LocalStorage.supportsLocalStorage() ){
 		manageCache = false;
 	}
-	if ( false === item.frontend_cache_nopriv && 'nopriv' === privileges ) {
+	if ( false === item.frontendCacheNopriv && 'nopriv' === privileges ) {
 		manageCache = false;
 	}
-	if ( false === item.frontend_cache_priv && 'priv' === privileges) {
+	if ( false === item.frontendCachePriv && 'priv' === privileges) {
 		manageCache = false;
 	}
 	if ( manageCache === true ){
@@ -273,7 +276,7 @@ function ocaFetchContent(ajaxUrl, item, setCache, cachePrefix) {
 			console.log('setCache status for ajax success' + setCache);
 			if( true === setCache ){
 				console.log('setCache true');
-				LocalStorage.setItem('oca-' + cachePrefix + '-' + item.jobHash, jobStorage, 3600);
+				LocalStorage.setItem('oca-' + cachePrefix + '-' + item.jobHash, jobStorage, cacheExpiration);
 				console.info('localStorage maybe set for ' + 'oca-' + cachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash));
 			} else {
 				console.info('localStorage NOT set for ' + 'oca-' + cachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash));

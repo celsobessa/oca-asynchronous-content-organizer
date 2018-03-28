@@ -30,6 +30,10 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+// If this file is called directly, abort.
+if ( ! defined( 'OCA_SECURE_MODE' ) ) {
+	define( 'OCA_SECURE_MODE', false );
+}
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-oca-asynchronous-content-organizer-activator.php

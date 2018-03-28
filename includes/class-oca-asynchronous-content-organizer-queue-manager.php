@@ -324,6 +324,7 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 			'backend_cache'				=> true,
 			'frontend_cache_priv'		=> 'none', // false, true, 'purgeonchange'. default: false,
 			'frontend_cache_nopriv'		=> 'none', // false, true, 'purgeonchange'. default: false,
+			'cache_expiration'			=> 3600,
 			'container'					=> '#main',
 			'trigger'					=> 'window.load',
 			'timeout'					=> 20000,
