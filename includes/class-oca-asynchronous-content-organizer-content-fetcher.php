@@ -74,6 +74,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	private $backend_cache;
 
 	/**
+	 * TODO Deprecate
 	 * The cache behavior for the content in frontend.
 	 *
 	 * Indicates if the content returned by the function should be cached in frontend. The default is true.

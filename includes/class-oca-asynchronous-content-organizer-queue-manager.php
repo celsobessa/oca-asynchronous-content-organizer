@@ -138,17 +138,6 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	private $backend_cache;
 
 	/**
-	 * The cache behavior for the content in frontend.
-	 *
-	 * Indicates if the content returned by the function should be cached in frontend. The default is true.
-	 *
-	 * @since 		0.4.0
-	 * @access 		private
-	 * @var 		bool 			$frontend_cache;    The cache behavior for the content: true (default) or false.
-	 */
-	private $frontend_cache;
-
-	/**
 	 * The container for the injected content
 	 *
 	 * A CSS selector of the element used as container for the content returned by the OCA Fetcher.
@@ -333,7 +322,8 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 			'nopriv_function_args'		=> array(''),
 			'nopriv_function_output'	=> '',
 			'backend_cache'				=> true,
-			'frontend_cache'			=> 'none', // none, same, both, bothpurge, priv, privpurge, nopriv, noprivpurge. default: none
+			'frontend_cache_priv'		=> 'none', // false, true, 'purgeonchange'. default: false,
+			'frontend_cache_nopriv'		=> 'none', // false, true, 'purgeonchange'. default: false,
 			'container'					=> '#main',
 			'trigger'					=> 'window.load',
 			'timeout'					=> 20000,
@@ -358,7 +348,8 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 		// merges defaults and user provided argument
 		$job_args = wp_parse_args($args, $defaults);
 		$job_hash = $job_args;
-		unset($job_hash['frontend_cache']);
+		unset($job_hash['frontend_cache_priv']);
+		unset($job_hash['frontend_cache_nopriv']);
 		// make hash of args (method)
 		$job_hash = $this->make_args_hash( $job_hash );
 

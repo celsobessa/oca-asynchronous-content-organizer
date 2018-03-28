@@ -2,7 +2,7 @@
 // =================================================
 'use strict';
 
-var ls, lsContent, ocaDelayedScripts, ocaQueue, privileges = false, ocaDebug = false, cachePrefix = '', removeCachePrefix = '', setCache = false;
+var ls, lsContent, ocaDelayedScripts, ocaQueue, privileges = false, ocaDebug = false, manageCache = true, cachePrefix = '', removeCachePrefix = '', setCache = false;
 console.log('privileges after declaration', privileges);
 function testLocalStorageSet(){
 	if (LocalStorage){
@@ -107,6 +107,50 @@ function ocaProcessQueue(queue) {
 
 var ocaManageCache = function ( item ){
 	console.info('ocaManageCache init for job = ', item.jobHash);
+	console.info('item.frontend_cache_priv ', item.frontend_cache_priv);
+	console.info('item.frontend_cache_nopriv ', item.frontend_cache_nopriv);
+	const cacheRulePriv = item.frontend_cache_priv;
+	const cacheRuleNopriv = item.frontend_cache_nopriv;
+	console.info('cacheRulePriv ', cacheRulePriv);
+	console.info('cacheRuleNopriv', cacheRuleNopriv);
+	console.info('privileges', privileges);
+	if ( 'priv' === privileges ){
+		cachePrefix = 'priv';
+		removeCachePrefix = 'nopriv';
+	} else {
+		cachePrefix = 'nopriv';
+		removeCachePrefix = 'priv';
+	}
+	console.log('cachePrefix for job ' + item.jobHash + ' = ', cachePrefix);
+	if ( ( 'priv' === privileges && 'purgeonchange' === cacheRuleNopriv ) || ( 'nopriv' === privileges && 'purgeonchange' === cacheRulePriv ) )  {
+		LocalStorage.removeItem('oca-' + removeCachePrefix + '-' + item.jobHash);
+		console.info('LocalStorage.removeItem');
+		console.info('LocalStorage.getItem after removeItem oca-' + removeCachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + removeCachePrefix + '-' + item.jobHash));
+	}
+	if ( true === cacheRulePriv || true === cacheRuleNopriv || 'purgeonchange' === cacheRulePriv || 'purgeonchange' === cacheRuleNopriv ){
+		var cachedHtml = LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash);
+		console.info('cachedHtml = ', cachedHtml);
+		setCache = true;
+		console.info('setCache = ', setCache);
+	} else {
+		var cachedHtml = null;
+		setCache = false;
+		console.info('cachedHtml null ', cachedHtml);
+	}
+
+	if( null !== cachedHtml ){
+		var html = cachedHtml;
+		ocaInjectContent(item.container, item.placement, item.loaderEnable, item.functionName, html);
+		ocaItemIsProcessed(item, 'success');
+		ocaRunCallback(item.callback);
+
+	} else {
+		ocaFetchContent(ocaVars.ajaxUrl, item, setCache, cachePrefix);
+	}
+}
+
+var ocaManageCacheBak = function ( item ){
+	console.info('ocaManageCache init for job = ', item.jobHash);
 	console.info('item.frontend_cache ', item.frontend_cache );
 	const cacheRule = item.frontend_cache.split('|');
 	console.info('cacheRule ', cacheRule );
@@ -151,7 +195,8 @@ var ocaManageCache = function ( item ){
 
 function ocaProcessItem(item, index, array) {
 	console.info('ocaProcessItem init');
-	console.info('ocaProcessItem item.frontend_cache ', item.frontend_cache);
+	console.info('ocaProcessItem item.frontend_cache_priv ', item.frontend_cache_priv);
+	console.info('ocaProcessItem item.frontend_cache_nopriv ', item.frontend_cache_nopriv);
 	console.info('ocaProcessItem LocalStorage.supportsLocalStorage ', LocalStorage.supportsLocalStorage() );
 	console.info('ocaProcessItem ocaDebug ', ocaDebug);
 
@@ -175,12 +220,24 @@ function ocaProcessItem(item, index, array) {
 		item.loaderMessage = item.loaderMessageWhile;
 	}
 	ocaInjectLoader(item.container, item.placement, item.loaderEnable, item.loaderMessage);
-	if ( 'none' !== item.frontend_cache && true === LocalStorage.supportsLocalStorage() && false === ocaDebug ) {
-		console.log('ocaProcessItem item.frontend_cache !== none');
+
+	// check if item.frontend_cache_nopriv or item.frontend_cache_priv is not false
+	// check if debug mode is off
+	// check if local storage is supported
+	if ( true === ocaDebug || true !== LocalStorage.supportsLocalStorage() ){
+		manageCache = false;
+	}
+	if ( false === item.frontend_cache_nopriv && 'nopriv' === privileges ) {
+		manageCache = false;
+	}
+	if ( false === item.frontend_cache_priv && 'priv' === privileges) {
+		manageCache = false;
+	}
+	if ( manageCache === true ){
+		console.info('manageCache === true');
 		ocaManageCache(item);
-		//isUserLogged(ocaManageCache, item);
 	} else {
-		console.error('ocaProcessItem item.frontend_cache equals none or localStorage not supported');
+		console.info('manageCache !== true');
 		ocaFetchContent(ocaVars.ajaxUrl, item, false);
 	}
 }
@@ -216,8 +273,10 @@ function ocaFetchContent(ajaxUrl, item, setCache, cachePrefix) {
 			if( true === setCache ){
 				console.log('setCache true');
 				LocalStorage.setItem('oca-' + cachePrefix + '-' + item.jobHash, jobStorage, 3600);
+				console.info('localStorage maybe set for ' + 'oca-' + cachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash));
+			} else {
+				console.info('localStorage NOT set for ' + 'oca-' + cachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash));
 			}
-			console.info('localStorage maybe set for ' + 'oca-' + cachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash));
 			ocaRunCallback(item.callback);
 			ocaItemIsProcessed(item, 'success');
 		},
