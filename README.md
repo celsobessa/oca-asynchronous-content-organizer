@@ -94,6 +94,7 @@ The inline documentation within `class-oca-asynchronous-content-organizer-queue-
 	 * 													privileged or if the user non-privileged and there's no specificied
 	 * 													nopriv_function_name. Default value is (empty).
 	 *     @type array      $function_args				an array of arguments for the function specified by $function_name.
+	 * 													If your args are already an array, you must nest inside this array.
 	 *                                          		Default is value of array('') (an empty array).
 	 *     @type array      $function_output			The type of behavior the function specificed by $function_name has: does it echoes or does it return data?
 	 *                                          		Default is value of 'return'.
@@ -103,6 +104,7 @@ The inline documentation within `class-oca-asynchronous-content-organizer-queue-
 	 * 													If $nopriv_function name is 'bypass', it will not trigger the request
 	 * 													if the user is non-privileged. Default value is '' (empty).
 	 *     @type array      $nopriv_function_args		An array of arguments for the function specified by $nopriv_function_name.
+	 * 													If your args are already an array, you must nest inside this array.
 	 *                                          		Default is value of array('') (an empty array).
 	 *     @type array      nopriv_$function_output		The type of behavior the function specified by $nopriv_function_name has: does it echoes or does it return data? If nopriv_function_output is left empty, the same function from $function_name will be used for non-privileged users.
 	 *                                          		Default is value of ''.
@@ -223,7 +225,7 @@ function oca_demo_3_register_scripts() {
         // job 1 arguments
         $oca_job_1_args = array(
             'function_name'			=> 'wp_generate_tag_cloud', // function name
-            'function_args' 		=> $cloud_args, // arguments to be passed to wp_generate_tag_cloud function
+            'function_args' 		=> array( $cloud_args) , // arguments to be passed to wp_generate_tag_cloud function
             'container' 			=> '#colophon', // where OCA will inject the content
         );
 
@@ -278,9 +280,9 @@ function oca_demo_4_register_scripts() {
         // job 1 arguments
         $oca_job_1_args = array(
             'function_name'			=> 'wp_generate_tag_cloud', // function name
-            'function_args' 		=> $cloud_args, // arguments to be passed to wp_generate_tag_cloud function
+            'function_args' 		=> array( $cloud_args ), // arguments to be passed to wp_generate_tag_cloud function
             'nopriv_function_name'	=> 'wp_generate_tag_cloud', // function name
-            'nopriv_function_args' 	=> $nopriv_cloud_args, // arguments to be passed to wp_generate_tag_cloud function
+            'nopriv_function_args' 	=> array( $nopriv_cloud_args ), // arguments to be passed to wp_generate_tag_cloud function
             'container' 			=> '#colophon', // where OCA will inject the content
         );
 
@@ -318,7 +320,7 @@ function oca_demo_5_register_scripts() {
         // job 1 arguments
         $oca_job_1_args = array(
             'function_name'			 => 'wp_generate_tag_cloud', // function name
-            'function_args' 		 => $cloud_args, // arguments to be passed to wp_generate_tag_cloud function
+            'function_args' 		 => array( $cloud_args ), // arguments to be passed to wp_generate_tag_cloud function
             'nopriv_function_name'	 => 'wp_list_categories', // function name
             'nopriv_function_output' => 'echo',
             'container' 			 => '#colophon', // where OCA will inject the content
@@ -342,7 +344,7 @@ In this case, you need to create a function to output the teaser content and the
 A simple teaser function could be something like this:
 
 ```php
-oca_demo_6_teaser(){
+function oca_demo_6_teaser(){
     $html = '<div class="teaser">';
     $html .= '<h3>Become a member for 50% less!</h3>';
     $html .= '<p>This month, you can become a subscriber and get all our content for only half the price</p>';
@@ -383,7 +385,7 @@ Again, you need to create a function to output the teaser content and then tell 
 The teaser function is the same form the previous example:
 
 ```php
-oca_demo_7_teaser(){
+function oca_demo_7_teaser(){
     $html = '<div class="teaser">';
     $html .= '<h3>Become a member for 50% less!</h3>';
     $html .= '<p>This month, you can become a subscriber and get all our content for only half the price</p>';
@@ -423,7 +425,7 @@ In example 7 we showed a we injected a teaser message offering 50% discount code
 For non-logged users he teaser function is the same form the previous example:
 
 ```php
-oca_demo_8_teaser(){
+function oca_demo_8_teaser(){
     $html = '<div class="teaser">';
     $html .= '<h3>Become a member for 50% less!</h3>';
     $html .= '<p>This month, you can become a subscriber and get all our content for only half the price</p>';
@@ -435,11 +437,11 @@ oca_demo_8_teaser(){
 For logged users, we will show another simple message:
 
 ```php
-oca_demo_8_thank_you(){
+function oca_demo_8_thank_you(){
     $html = '<div class="teaser thank-you">';
     $html .= '<h3>Thanks for being a supporter</h3>';
     $html .= '<p>We really appreciate being a member and becoming our supporter.</p>';
-    $html .= '<p>Don't forget to redeem your <em>PERKs</em> in your profile page</p>';
+    $html .= '<p>Don\'t forget to redeem your <em>PERKs</em> in your profile page</p>';
     $html .= '</div>';
     return $html;
 }
@@ -484,7 +486,7 @@ Finally, a word about security: **never** store any kind of credentials or passw
 ```php
 
 // For non-logged users
-oca_demo_9_teaser(){
+function oca_demo_9_teaser(){
     $html = '<div class="teaser">';
     $html .= '<h3>Become a member for 50% less!</h3>';
     $html .= '<p>This month, you can become a subscriber and get all our content for only half the price</p>';
@@ -494,11 +496,11 @@ oca_demo_9_teaser(){
 }
 
 //For logged users
-oca_demo_9_thank_you(){
+function oca_demo_9_thank_you(){
     $html = '<div class="teaser thank-you">';
     $html .= '<h3>Thanks for being a supporter</h3>';
     $html .= '<p>We really appreciate being a member and becoming our supporter.</p>';
-    $html .= '<p>Don't forget to redeem your <em>PERKs</em> in your profile page</p>';
+    $html .= '<p>Don\'t forget to redeem your <em>PERKs</em> in your profile page</p>';
     $html .= '</div>';
     return $html;
 }
@@ -535,7 +537,7 @@ Building upon the previous example, we can have different cache rules for logged
 ```php
 
 // For non-logged users
-oca_demo_10_teaser(){
+function oca_demo_10_teaser(){
     $html = '<div class="teaser">';
     $html .= '<h3>Become a member for 50% less!</h3>';
     $html .= '<p>This month, you can become a subscriber and get all our content for only half the price</p>';
@@ -545,11 +547,11 @@ oca_demo_10_teaser(){
 }
 
 //For logged users
-oca_demo_10_thank_you(){
+function oca_demo_10_thank_you(){
     $html = '<div class="teaser thank-you">';
     $html .= '<h3>Thanks for being a supporter</h3>';
     $html .= '<p>We really appreciate being a member and becoming our supporter.</p>';
-    $html .= '<p>Don't forget to redeem your <em>PERKs</em> in your profile page</p>';
+    $html .= '<p>Don\'t forget to redeem your <em>PERKs</em> in your profile page</p>';
     $html .= '</div>';
     return $html;
 }
@@ -609,7 +611,7 @@ Notice that the pass an array with `$post_id` to the `function_args` parameter. 
 ```php
 
 //For logged users, fetch post content
-oca_demo_11_get_content($post_id){
+function oca_demo_11_get_content($post_id){
 
     // get post object
     global $post;
@@ -620,14 +622,14 @@ oca_demo_11_get_content($post_id){
     $html .= '<div class="teaser thank-you">';
     $html .= '<h3>Thanks for being a supporter</h3>';
     $html .= '<p>We really appreciate being a member and becoming our supporter.</p>';
-    $html .= '<p>Don't forget to redeem your <em>PERKs</em> in your profile page</p>';
+    $html .= '<p>Don\'t forget to redeem your <em>PERKs</em> in your profile page</p>';
     $html .= '</div>';
     return $html;
 
 }
 
 //For logged users, get a custom menu
-oca_demo_11_get_priv_menu(){
+function oca_demo_11_get_priv_menu(){
     $html = wp_nav_menu(
         array(
         'theme_location'	=> 'custom_menu',
@@ -698,6 +700,26 @@ Say you want to run a Javascript function after the new content arrives. That's 
 ## Browser Compatibility
 
 - TO DO
+## Frequently Asked Questions ##
+
+= What values are valida for frontend_cache parameter ? =
+
+```php
+    /**
+	 *  none: no cache on front-end
+	 *  both: a cache entry for priv and another nopriv. DON'T purge on privileges status change
+	 * 	both|purge: a cache for priv and other nopriv. Purge on privileges status change
+	 * 	priv: a cache for priv only. DON'T purge on privileges status change
+	 * 	priv|purge: a cache for priv only. Purge on privileges status change
+	 * 	nopriv: a cache for nopriv only. DON'T purge on privileges status change
+	 * 	nopriv|purge: a cache nofor priv only. Purge on privileges status change
+	 *
+     *  Default value is none.
+    */
+```
+
+Privilege status change means: whenever a logged-in user logs out or the other way around.
+Purge on privileges status change means: when the status changes, the cache for the oposite status is purged. e.g. when a user logs out and the rule is `frontend_cache` rules is `priv|purge`, the `priv` cached content will be purged.
 
 ## How to Contribute
 

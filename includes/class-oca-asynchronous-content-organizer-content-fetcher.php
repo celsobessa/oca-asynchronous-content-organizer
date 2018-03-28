@@ -136,7 +136,10 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * @since    0.2.6 added bypass support
 	 */
 	public function fetcher() {
+		error_log( 'oca Fetcher init' );
     	$function_name = $_POST['function_name'];
+		error_log( 'oca Fetcher $function_name' );
+		error_log( print_r( $function_name, true) );
 		$this->function_args = $_POST['function_args'];
     	if ( 'bypass' === $function_name ){
     		$response = 'bypass';
@@ -162,7 +165,10 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * @since    0.2.6 added bypass support
 	 */
 	public function nopriv_fetcher() {
+		error_log( 'oca nopriv_fetcher init' );
 		$function_name = $_POST['nopriv_function_name'];
+		error_log( 'oca nopriv_fetcher function_name' );
+		error_log( print_r( $function_name, true) );
     	$this->function_args = $_POST['nopriv_function_args'];
     	if ( 'bypass' === $function_name ){
 	    	echo 'bypass';

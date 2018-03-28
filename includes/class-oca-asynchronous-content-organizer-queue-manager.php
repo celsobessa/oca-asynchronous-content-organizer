@@ -272,7 +272,8 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 * 													If function name is bypass, it will not trigger the request if the user is
 	 * 													privileged or if the user non-privileged and there's no specificied
 	 * 													nopriv_function_name. Default value is (empty).
-	 *     @type array      $function_args				an array of arguments for the function specified by $function_name.
+	 *     @type array      $function_args				An array of arguments for the function specified by $function_name.
+	 * 													If your args are already an array, you must nest inside this array.
 	 *                                          		Default is value of array('') (an empty array).
 	 *     @type array      $function_output			The type of behavior the function specificed by $function_name has: does it echoes or does it return data?
 	 *                                          		Default is value of 'return'.
@@ -282,6 +283,7 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 * 													If $nopriv_function name is 'bypass', it will not trigger the request
 	 * 													if the user is non-privileged. Default value is '' (empty).
 	 *     @type array      $nopriv_function_args		An array of arguments for the function specified by $nopriv_function_name.
+	 * 													If your args are already an array, you must nest it inside this array.
 	 *                                          		Default is value of array('') (an empty array).
 	 *     @type array      nopriv_$function_output		The type of behavior the function specified by $nopriv_function_name has: does it echoes or does it return data? If nopriv_function_output is left empty, the same function from $function_name will be used for non-privileged users.
 	 *                                          		Default is value of ''.
@@ -309,8 +311,9 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 *                                          		Default is value 'apped'
 	 *     @type bool      loaderEnable					Should OCA show a loading message?
 	 *                                          		Default is value false
-	 *     @type string    trigger						The placeholder message while content is being fetched and loaded. It works onlye if #loaderEnable is true
-	 *                                          		Default is value 'loading content...'
+	 *     @type string    loaderMessage				The placeholder message while content is being fetched and loaded. It works onlye if #loaderEnable is true
+	 *     @type string    loaderMessageWhile			The placeholder message while content is being fetched and loaded for qeues with more than 3 jobs
+	 *                                          		Default is value 'loading content...<br><small>(it may take a while)</small>'
 	 * @return string 'job added to queue', 'job already on queue' or 'job arguments invalid'
 	*/
 	public function add_job( $args ) {
@@ -332,7 +335,7 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 			'backend_cache'				=> true,
 			'frontend_cache'			=> 'none', // none, same, both, bothpurge, priv, privpurge, nopriv, noprivpurge. default: none
 			'container'					=> '#main',
-			'triger'					=> 'window.load',
+			'trigger'					=> 'window.load',
 			'timeout'					=> 20000,
 			'placement'					=> 'append',
 			'loaderEnable'				=> false,
@@ -341,13 +344,15 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 			'callback'					=> false,
 		);
 		if ( empty($args['nopriv_function_name']) ){
-			$defaults['nopriv_function_name'] = $args['function_name'];
+			$args['nopriv_function_name'] = $args['function_name'];
 		}
-		if ( empty($args['nopriv_function_args']) ){
-			$defaults['nopriv_function_args'] = $args['function_args'];
+
+		if ( empty( $args['nopriv_function_args'] ) && !empty( $args['function_args'] ) ){
+			$args['nopriv_function_args'] = $args['function_args'];
 		}
-		if ( empty($args['nopriv_function_output']) ){
-			$defaults['nopriv_function_output'] = $args['function_output'];
+
+		if ( empty( $args['nopriv_function_output'] ) && !empty( $args['function_output'] ) ){
+			$args['nopriv_function_output'] = $args['function_output'];
 		}
 
 		// merges defaults and user provided argument
