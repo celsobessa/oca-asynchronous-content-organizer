@@ -135,15 +135,10 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * @since    0.2.6 added bypass support
 	 */
 	public function fetcher() {
-		//error_log( 'oca fetcher init' );
 		$function_name = $_POST['function_name'];
 		//$user_id = get_current_user_id();
-		//error_log( 'oca nopriv_fetcher $user_id' );
-		//error_log( print_r( $user_id, true) );
 		$response = '';
-		//error_log( 'oca nopriv_fetcher function_name' );
-		//error_log( print_r( $function_name, true) );
-    	$this->function_args = $_POST['function_args'];
+		$this->function_args = $_POST['function_args'];
     	if ( 'bypass' === $function_name ){
 	    	$response = 'bypass';
     	}
@@ -169,12 +164,9 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * @since    0.2.6 added bypass support
 	 */
 	public function nopriv_fetcher() {
-		//error_log( 'oca nopriv_fetcher init' );
 		$function_name = $_POST['nopriv_function_name'];
 		$response = '';
-		//error_log( 'oca nopriv_fetcher function_name' );
-		//error_log( print_r( $function_name, true) );
-    	$this->function_args = $_POST['nopriv_function_args'];
+		$this->function_args = $_POST['nopriv_function_args'];
     	if ( 'bypass' === $function_name ){
 	    	$response = 'bypass';
     	}
@@ -201,8 +193,6 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 			'userData'		=> $user_data
 		);
 		wp_send_json_success( $user_info );
-		//echo $user_info;
-		//die();
 	}
 
 }

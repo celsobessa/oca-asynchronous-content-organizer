@@ -19,7 +19,6 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 - security, sanitization and validation
 	- php
 	- js
-- Optimize and improve logged in check
 - drop jquery
 	- use chris ferdinandi atomic or other library
 - backend caching

@@ -306,7 +306,6 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 * @return string 'job added to queue', 'job already on queue' or 'job arguments invalid'
 	*/
 	public function add_job( $args ) {
-		//TODO remove echo 'debug args contendo ' . var_dump($args );
 		if ( empty( $args ) ){
 			echo 'error: no arguments provided';
 		}
@@ -370,8 +369,6 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 		array_push( $this->oca_hashes, $job_hash );
 
 		//TODO add to hashes (method)
-		//TODO remove this: echo 'success: job added to queue';
-		//TODO remove echo 'debug this queue contendo: ' . var_dump($this->oca_queue);
 	}
 
 	/**

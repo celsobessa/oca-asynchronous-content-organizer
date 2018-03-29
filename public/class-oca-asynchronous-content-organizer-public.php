@@ -113,7 +113,6 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		global $oca_manager;
 		$this->oca_queue = $oca_manager->get_queue();
 		$this->oca_hashes = $oca_manager->get_hashes();
-		//TODO remove this: echo 'debug enqueue scripts invoked oca_queue equals to ' ;
 		if ( !empty( $this->oca_queue ) ){
 			//wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/oca-asynchronous-content-organizer-public.css', array(), $this->version, 'all' );
 		}
@@ -149,9 +148,7 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		global $oca_manager;
 		$this->oca_queue = $oca_manager->get_queue();
 		$this->oca_hashes = $oca_manager->get_hashes();
-		//TODO remove this: echo 'debug enqueue scripts invoked oca_queue equals to ' ;
 		if ( !empty( $this->oca_queue ) ){
-			//TODO remove this: echo 'debug enqueue';
 			wp_enqueue_script( $this->plugin_name . '-polyfills', plugin_dir_url( __FILE__ ) . 'js/utilities/polyfills.js', '', $this->version, TRUE );
 			wp_enqueue_script( $this->plugin_name . '-localstorage', plugin_dir_url( __FILE__ ) . 'js/utilities/localstorage.js', '', $this->version, TRUE );
 			wp_enqueue_script( $this->plugin_name . '-atomic', plugin_dir_url( __FILE__ ) . 'js/utilities/atomic.min.js', '', $this->version, TRUE );
@@ -190,8 +187,8 @@ class Oca_Asynchronous_Content_Organizer_Public {
 				'noprivFunctionArgs'	=> $job['nopriv_function_args'],
 				'noprivFunctionOutput'	=> $job['nopriv_function_output'],
 				'backend_cache'			=> $job['backend_cache'],
-				'frontendCachePriv'   => $job['frontend_cache_priv'],
-				'frontendCacheNopriv' => $job['frontend_cache_nopriv'],
+				'frontendCachePriv'		=> $job['frontend_cache_priv'],
+				'frontendCacheNopriv'	=> $job['frontend_cache_nopriv'],
 				'cacheExpiration'		=> $job['cache_expiration'],
 				'container'            	=> $job['container'],
 				'trigger'			   	=> $job['trigger'],
