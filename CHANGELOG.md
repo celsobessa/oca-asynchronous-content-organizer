@@ -53,8 +53,19 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ### Added
 - README.md
 - README.txt
+- OCA_SECURE_MODE constant. When on, all output goes through wp_kses
+- 3 new filters: Oca/Content_Fetcher/Fetcher_Response and Oca/Content_Fetcher/Fetcher_Nopriv_Response
+- Changed OCA/Fetcher/User/Data to Oca/Content_Fetcher/User_Data
+- cacheExpiration parameter to ocaVars
 
 ### Changed
+- Better fetcher and nopriv_fetcher logic, more flexible and secure
+- better frontend cache management
+	- separated rules and better logic for priv and nopriv caches
+	- ocaVars frontend_cache_priv variable changed to frontendCachePriv
+	- ocaVars frontend_cache_nopriv variable changed to frontendCacheNopriv
+- improved response from `is_user_logged_in`: now it's an array with `userStatus` ('priv' or 'nopriv') and arbitrary data (with a WP filter)
+- new filter `'Oca/Fetcher/User/Data'` for arbitraty user data in ajax response from `is_user_logged_in` request
 - Improved inline documentation
 - minor tweaks
 
