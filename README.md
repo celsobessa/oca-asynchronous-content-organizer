@@ -56,7 +56,8 @@ $defaults = array(
     'nopriv_function_args'		=> array(''),
     'nopriv_function_output'	=> '',
     'backend_cache'				=> true,
-    'frontend_cache'			=> 'none',
+    'frontend_cache_priv'		=> false,
+    'frontend_cache_nopriv'		=> false,
     'container'					=> '#main',
     'triger'					=> 'window.load',
     'timeout'					=> 20000,
@@ -93,35 +94,39 @@ The inline documentation within `class-oca-asynchronous-content-organizer-queue-
 	 * 													If function name is bypass, it will not trigger the request if the user is
 	 * 													privileged or if the user non-privileged and there's no specificied
 	 * 													nopriv_function_name. Default value is (empty).
-	 *     @type array      $function_args				an array of arguments for the function specified by $function_name.
+	 *     @type array      $function_args				An array of arguments for the function specified by $function_name.
 	 * 													If your args are already an array, you must nest inside this array.
 	 *                                          		Default is value of array('') (an empty array).
 	 *     @type array      $function_output			The type of behavior the function specificed by $function_name has: does it echoes or does it return data?
-	 *                                          		Default is value of 'return'.
+	 *                                          		Default is value of 'echo'.
 	 *     @type string     $nopriv_function_name		Name of the function to be called by non-privileged users. If
 	 * 													nopriv_function_name is left empty, the same function from
 	 * 													$function_name will be used for non-privileged users.
 	 * 													If $nopriv_function name is 'bypass', it will not trigger the request
 	 * 													if the user is non-privileged. Default value is '' (empty).
 	 *     @type array      $nopriv_function_args		An array of arguments for the function specified by $nopriv_function_name.
-	 * 													If your args are already an array, you must nest inside this array.
+	 * 													If your args are already an array, you must nest it inside this array.
 	 *                                          		Default is value of array('') (an empty array).
 	 *     @type array      nopriv_$function_output		The type of behavior the function specified by $nopriv_function_name has: does it echoes or does it return data? If nopriv_function_output is left empty, the same function from $function_name will be used for non-privileged users.
 	 *                                          		Default is value of ''.
 	 *     @type bool      backend_cache				should OCA cache the response (true) on backend?
 	 *                                          		Default value is true.
-	 *     @type bool      frontend_cache				should OCA cache the response in front end? following which
-	 * 													cache purging policy? Fires before content is applied. If purge
-	 *													directives are set, content is purged when privileges (status) change
-	 * 													Valid values:
-	 * 													- none: no cache on front-end
-	 * 													- both: a cache for priv and other nopriv. DON'T purge on status change
-	 * 													- both|purge: a cache for priv and other nopriv. Purge on status change
-	 * 													- priv: a cache for priv only. DON'T purge on change
-	 * 													- priv|purge: a cache for priv only. Purge on change
-	 * 													- nopriv: a cache for nopriv only. DON'T purge on status change
-	 * 													- nopriv|purge: a cache nofor priv only. Purge on status change
-	 *                                          		Default value is none.
+	 *     @type mixed     frontend_cache_priv			should OCA cache the response in front end for privileged users and
+	 * 													following which cache purging policy? Fires before content is
+	 * 													injected. If is set to 'purgeonchange', content cache is purged when
+	 *													privileges (status) change. Valid values are:
+	 * 													- false: no cache on frontend
+	 * 													- true: cache on frontend
+	 * 													- 'purgeonchcange': cache in frontend. Purge cache on status change
+	 * 													Any other values are invalid and equals to false. Default is false.
+	 *     @type mixed     frontend_cache_nopriv		should OCA cache the response in front end for non-privileged users
+	 * 													and following which cache purging policy? Fires before content is
+	 * 													injected. If is set to 'purgeonchange', content cache is purged when
+	 *													privileges (status) change. Valid values are:
+	 * 													- false: no cache on frontend
+	 * 													- true: cache on frontend
+	 * 													- 'purgeonchcange': cache in frontend. Purge cache on status change
+	 * 													Any other values are invalid and equals to false. Default is false.
 	 *     @type string    container					An jQuery/CSS3 selector of the element to inject content
 	 *                                          		Default is value '#main' (WordPress default theme main content area)
 	 *     @type string    trigger						A event for triggering the loading processes. For now, it accepts only window.load. Future versions will allow other triggers ad document.load, click, etc.
@@ -132,13 +137,14 @@ The inline documentation within `class-oca-asynchronous-content-organizer-queue-
 	 *                                          		Default is value 'apped'
 	 *     @type bool      loaderEnable					Should OCA show a loading message?
 	 *                                          		Default is value false
-	 *     @type string    trigger						The placeholder message while content is being fetched and loaded. It works onlye if #loaderEnable is true
-	 *                                          		Default is value 'loading content...'
+	 *     @type string    loaderMessage				The placeholder message while content is being fetched and loaded. It works onlye if #loaderEnable is true
+	 *     @type string    loaderMessageWhile			The placeholder message while content is being fetched and loaded for qeues with more than 3 jobs
+	 *                                          		Default is value 'loading content...<br><small>(it may take a while)</small>'
 	 * @return string 'job added to queue', 'job already on queue' or 'job arguments invalid'
 	*/
 ```
 
-You can find further information on `frontend_cache` values in the FAQ below
+You can find further information on `frontend_cache_priv` and `frontend_cache_nopriv` parameters in the FAQ below
 
 ### Examples for how to use OCA - Asynchronous Content Organizer
 
@@ -166,7 +172,7 @@ function oca_demo_1_register_scripts() {
 
         // job 1 arguments
         $oca_job_1_args = array(
-            'function_name'			=> 'wp_generate_tag_cloud', // function name
+            'function_name'			=> 'wp_tag_cloud', // function name
         );
 
         // push job to queue
@@ -175,7 +181,7 @@ function oca_demo_1_register_scripts() {
 }
 add_action('wp_enqueue_scripts', 'oca_demo_1_register_scripts', 9);
 ```
-Notice that we are using `wp_generate_tag_cloud`, which returns a string, instead of `wp_tag_cloud` which outputs the content. We could use `wp_tag_cloud` as well, but when using functions which outputs content, we need to set the `function_output` parameter to `'echo'`, as shown in example 5.
+Notice that we are using `wp_tag_cloud`, which returns a string, instead of `wp_tag_cloud` which outputs the content. We could use `wp_tag_cloud` as well, but when using functions which outputs content, we need to set the `function_output` parameter to `'echo'`, as shown in example 5.
 
 #### Example 2: Adding a Tag Cloud to the theme footer
 
@@ -192,7 +198,7 @@ function oca_demo_2_register_scripts() {
 
         // job 1 arguments
         $oca_job_1_args = array(
-            'function_name'			=> 'wp_generate_tag_cloud', // function name
+            'function_name'			=> 'wp_tag_cloud', // function name
             'container' 			=> '#colophon', // where OCA will inject the content
         );
 
@@ -224,8 +230,8 @@ function oca_demo_3_register_scripts() {
 
         // job 1 arguments
         $oca_job_1_args = array(
-            'function_name'			=> 'wp_generate_tag_cloud', // function name
-            'function_args' 		=> array( $cloud_args) , // arguments to be passed to wp_generate_tag_cloud function
+            'function_name'			=> 'wp_tag_cloud', // function name
+            'function_args' 		=> array( $cloud_args) , // arguments to be passed to wp_tag_cloud function
             'container' 			=> '#colophon', // where OCA will inject the content
         );
 
@@ -279,10 +285,10 @@ function oca_demo_4_register_scripts() {
 
         // job 1 arguments
         $oca_job_1_args = array(
-            'function_name'			=> 'wp_generate_tag_cloud', // function name
-            'function_args' 		=> array( $cloud_args ), // arguments to be passed to wp_generate_tag_cloud function
-            'nopriv_function_name'	=> 'wp_generate_tag_cloud', // function name
-            'nopriv_function_args' 	=> array( $nopriv_cloud_args ), // arguments to be passed to wp_generate_tag_cloud function
+            'function_name'			=> 'wp_tag_cloud', // function name
+            'function_args' 		=> array( $cloud_args ), // arguments to be passed to wp_tag_cloud function
+            'nopriv_function_name'	=> 'wp_tag_cloud', // function name
+            'nopriv_function_args' 	=> array( $nopriv_cloud_args ), // arguments to be passed to wp_tag_cloud function
             'container' 			=> '#colophon', // where OCA will inject the content
         );
 
@@ -319,8 +325,8 @@ function oca_demo_5_register_scripts() {
 
         // job 1 arguments
         $oca_job_1_args = array(
-            'function_name'			 => 'wp_generate_tag_cloud', // function name
-            'function_args' 		 => array( $cloud_args ), // arguments to be passed to wp_generate_tag_cloud function
+            'function_name'			 => 'wp_tag_cloud', // function name
+            'function_args' 		 => array( $cloud_args ), // arguments to be passed to wp_tag_cloud function
             'nopriv_function_name'	 => 'wp_list_categories', // function name
             'nopriv_function_output' => 'echo',
             'container' 			 => '#colophon', // where OCA will inject the content
@@ -473,9 +479,9 @@ add_action('wp_enqueue_scripts', 'oca_demo_8_register_scripts', 9);
 ```
 #### Example 9: Basic front-end caching for improved performance
 
-For improving user experience and speed perception for users using browser supporting localStorage API, you can set frontend_cache rules. In this exeample, we will use a simple cache rule for the generated content.
+For improving user experience and speed perception for users using browser supporting localStorage API, you can set `frontend_cache_priv` and `frontend_cache_nopriv` rules. In this exeample, we will use a simple cache rule for the generated content.
 
-The teaser and thank you functions are the same from the previous example, but notice the `frontend_cache` parameter set to both in the OCA job arguments. This will make OCA keep bot the responses in localStorage and retrieve each one according to users status.
+The teaser and thank you functions are the same from the previous example, but notice `frontend_cache_priv` and `frontend_cache_nopriv` parameter are both set to true in the OCA job arguments. This will make OCA keep bot the responses in localStorage and retrieve each one according to users status.
 
 As the content will be in the local cache, it will appear way faster in the page, while avoid new requests when the user reenter a page previously visited. In fact, if you use the same functions with the same exactly parameters in different pages, all pages benefit from cached content and load faster in most cases.
 
@@ -514,13 +520,14 @@ function oca_demo_9_register_scripts() {
         // get oca_manager global
         global $oca_manager;
 
-        // job 1 arguments. notice the 'frontend_cache' paramenter
+        // job 1 arguments. notice the frontend_cache_priv and frontend_cache_nopriv paramenters
         // check all possible values in the inline documentation in `class-oca-asynchronous-content-organizer-queue-manager.php` :
         $oca_job_1_args = array(
-            'function_name'     => 'oca_demo_9_teaser', // function name
-            'nopriv_function_name' => 'oca_demo_9_thank_you', // function name
-            'placement'         => 'append', // should we 'append' (default), 'prepend' or 'replace' the content in the container?
-            'frontend_cache'    => 'both' // we should cache response for both logged and non-logged users
+            'function_name'         => 'oca_demo_9_teaser', // function name
+            'nopriv_function_name'  => 'oca_demo_9_thank_you', // function name
+            'placement'             => 'append', // should we 'append' (default), 'prepend' or 'replace' the content in the container?
+            'frontend_cache_priv'   => true,
+            'frontend_cache_nopriv' => true // we should cache response for both logged and non-logged users
         );
 
         // push job to queue
@@ -532,7 +539,7 @@ add_action('wp_enqueue_scripts', 'oca_demo_9_register_scripts', 9);
 
 #### Example 10: Different frontend_cache rules for logged-in users
 
-Building upon the previous example, we can have different cache rules for logged and non-logged users. In this example we will cache the content for non-logged users but not for logged-in users. To achieve this, we use `'nopriv'` as our `frontend_cache` directive
+Building upon the previous example, we can have different cache rules for logged and non-logged users. In this example we will cache the content for non-logged users but not for logged-in users. To achieve this, we use `frontend_cache_nopriv` as `true` and `frontend_cache_priv` as `false` (or just don't set it!)
 
 ```php
 
@@ -571,7 +578,8 @@ function oca_demo_10_register_scripts() {
             'function_name'     => 'oca_demo_10_teaser', // function name
             'nopriv_function_name' => 'oca_demo_10_thank_you', // function name
             'placement'         => 'append', // should we 'append' (default), 'prepend' or 'replace' the content in the container?
-            'frontend_cache'    => 'nopriv' // cache response for non-logged (nopriv) users only
+            'frontend_cache_priv'   => true,
+            'frontend_cache_nopriv' => false // we should cache response for both logged and non-logged users
         );
 
         // push job to queue
@@ -602,11 +610,11 @@ Let's see the code:
 
 The page will be generated with the non-logged version content (excerpt) for both type users, leveraging page cache. Then, on window.load event, OCA will kick in, check if user is logged in and place "content loading" in the main area (the element with #main.
 
-If the user is loggged in, job 1 will fetch the post content and replace the content in element with `id="main"`. If user is not logged, will do nothing.
+If the user is loggged in, job 1 will fetch the post content and replace the content in element with `id="main"`. If user is not logged, will do nothing. Also, we won't set neither `frontend_cache_priv` and `frontend_cache_nopriv` parameters so nothing will be cached in the frontend
 
-Following the same logic, job 2 will fetch a custom menu for logged in users only and do nothing for non-logged users. Because there is no sensitive information in the menu itself, we will set job 2 `frontend_cache` parameter to priv, without purging between user privileges changes.
+Following the same logic, job 2 will fetch a custom menu for logged in users only and do nothing for non-logged users. Because there is no sensitive information in the menu itself, we will set job 2 `frontend_cache_nopriv` parameter to `true`, without purging between user privileges changes.
 
-Notice that the pass an array with `$post_id` to the `function_args` parameter. The reason is that OCA uses a hash of all parameters to create the cache identifier. If we don't use some distintice informatio between posts, OCA will get the same cache content for all posts.
+Notice that we pass an array with `$post_id` to the `function_args` parameter. The reason is that OCA uses a hash of all parameters to create the cache identifier. If we don't use some distintice informatio between posts, OCA will get the same cache content for all posts.
 
 ```php
 
@@ -669,7 +677,7 @@ function oca_demo_11_register_scripts() {
             'nopriv_function_name'  => 'bypass', //don't make any request for non-logged users
             'container'             => '.navigation-top',
             'placement'             => 'append',
-            'frontend_cache'        => 'priv' // cache in the front end for privileged users
+            'frontend_cache_nopriv' => true // we should cache response for both logged and non-logged users
         );
 
         // push jobs to queue
@@ -692,7 +700,7 @@ Say you want to run a Javascript function after the new content arrives. That's 
             'nopriv_function_name'  => 'bypass', //don't make any request for non-logged users
             'container'             => '.navigation-top',
             'placement'             => 'append',
-            'frontend_cache'        => 'priv' // cache in the front end for privileged users,
+            'frontend_cache_priv'   => 'true' // cache in the front end for privileged users,
             'callback'              => 'my_own_callback'
         );
 ```
@@ -702,19 +710,15 @@ Say you want to run a Javascript function after the new content arrives. That's 
 - TO DO
 ## Frequently Asked Questions ##
 
-= What values are valida for frontend_cache parameter ? =
+### What values are valid for frontend_cache_priv and frontend_cache_nopriv parameters?
 
 ```php
     /**
-	 *  none: no cache on front-end
-	 *  both: a cache entry for priv and another nopriv. DON'T purge on privileges status change
-	 * 	both|purge: a cache for priv and other nopriv. Purge on privileges status change
-	 * 	priv: a cache for priv only. DON'T purge on privileges status change
-	 * 	priv|purge: a cache for priv only. Purge on privileges status change
-	 * 	nopriv: a cache for nopriv only. DON'T purge on privileges status change
-	 * 	nopriv|purge: a cache nofor priv only. Purge on privileges status change
+	 *  false: no cache on frontend
+	 *  true: cache on frontend for browsers supporting localStorage
+	 * 	'purgeonchange': aPurge on privileges status change
 	 *
-     *  Default value is none.
+     *  Default value is false.
     */
 ```
 

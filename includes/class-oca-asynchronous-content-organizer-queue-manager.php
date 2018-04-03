@@ -265,7 +265,7 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 * 													If your args are already an array, you must nest inside this array.
 	 *                                          		Default is value of array('') (an empty array).
 	 *     @type array      $function_output			The type of behavior the function specificed by $function_name has: does it echoes or does it return data?
-	 *                                          		Default is value of 'return'.
+	 *                                          		Default is value of 'echo'.
 	 *     @type string     $nopriv_function_name		Name of the function to be called by non-privileged users. If
 	 * 													nopriv_function_name is left empty, the same function from
 	 * 													$function_name will be used for non-privileged users.
@@ -278,18 +278,22 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 	 *                                          		Default is value of ''.
 	 *     @type bool      backend_cache				should OCA cache the response (true) on backend?
 	 *                                          		Default value is true.
-	 *     @type bool      frontend_cache				should OCA cache the response in front end? following which
-	 * 													cache purging policy? Fires before content is applied. If purge
-	 *													directives are set, content is purged when privileges (status) change
-	 * 													Valid values:
-	 * 													- none: no cache on front-end
-	 * 													- both: a cache for priv and other nopriv. DON'T purge on status change
-	 * 													- both|purge: a cache for priv and other nopriv. Purge on status change
-	 * 													- priv: a cache for priv only. DON'T purge on change
-	 * 													- priv|purge: a cache for priv only. Purge on change
-	 * 													- nopriv: a cache for nopriv only. DON'T purge on status change
-	 * 													- nopriv|purge: a cache nofor priv only. Purge on status change
-	 *                                          		Default value is none.
+	 *     @type mixed     frontend_cache_priv			should OCA cache the response in front end for privileged users and
+	 * 													following which cache purging policy? Fires before content is
+	 * 													injected. If is set to 'purgeonchange', content cache is purged when
+	 *													privileges (status) change. Valid values are:
+	 * 													- false: no cache on frontend
+	 * 													- true: cache on frontend
+	 * 													- 'purgeonchcange': cache in frontend. Purge cache on status change
+	 * 													Any other values are invalid and equals to false. Default is false.
+	 *     @type mixed     frontend_cache_nopriv		should OCA cache the response in front end for non-privileged users
+	 * 													and following which cache purging policy? Fires before content is
+	 * 													injected. If is set to 'purgeonchange', content cache is purged when
+	 *													privileges (status) change. Valid values are:
+	 * 													- false: no cache on frontend
+	 * 													- true: cache on frontend
+	 * 													- 'purgeonchcange': cache in frontend. Purge cache on status change
+	 * 													Any other values are invalid and equals to false. Default is false.
 	 *     @type string    container					An jQuery/CSS3 selector of the element to inject content
 	 *                                          		Default is value '#main' (WordPress default theme main content area)
 	 *     @type string    trigger						A event for triggering the loading processes. For now, it accepts only window.load. Future versions will allow other triggers ad document.load, click, etc.
@@ -316,13 +320,13 @@ class Oca_Asynchronous_Content_Organizer_Queue_Manager {
 		$defaults = array(
 			'function_name'				=> '',
 			'function_args'				=> array(''),
-			'function_output'			=> 'return',
+			'function_output'			=> 'echo',
 			'nopriv_function_name'		=> '',
 			'nopriv_function_args'		=> array(''),
 			'nopriv_function_output'	=> '',
 			'backend_cache'				=> true,
-			'frontend_cache_priv'		=> 'none', // false, true, 'purgeonchange'. default: false,
-			'frontend_cache_nopriv'		=> 'none', // false, true, 'purgeonchange'. default: false,
+			'frontend_cache_priv'		=> false, // false, true, 'purgeonchange'. default: false,
+			'frontend_cache_nopriv'		=> false, // false, true, 'purgeonchange'. default: false,
 			'cache_expiration'			=> 3600,
 			'container'					=> '#main',
 			'trigger'					=> 'window.load',

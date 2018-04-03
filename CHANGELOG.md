@@ -16,12 +16,12 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 
 - improve cache management
 	- cache management logic
+	- backend caching
 - security, sanitization and validation
 	- php
 	- js
 - drop jquery
 	- use chris ferdinandi atomic or other library
-- backend caching
 - better front end caching (maybe use Mozilla Forage)
 - better "loading content" placeholder/behavior
 	- early loading if localStorage is supporte or maybe use Web Worker / Service Workder
@@ -47,8 +47,16 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 - javascript localization
 - improve documentation
 - refactor / code improvement
+- modular architecture / addons
+	- Possible Addons
+		- WordPress loops (like twenty-seventeen, twenty-sixteen, etc)
+		- WordPress common content functions (tag cloud, standard widgets, categories list, etc)
+		- Genesis loop (e outras funções Genesis como secondary menu?)
+		- aWoocomerce (e.g shop, shortcodes, loops, upsell, cross-sell)
+		- Logged in contente (change menu, change sidebar, widgets,etc)
+		- Membership plugins support
 
-## 0.5.0 WIP
+## 0.5.0 - 2018-04-03
 
 ### Added
 - README.md
@@ -59,7 +67,8 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 - cacheExpiration parameter to ocaVars
 
 ### Changed
-- Better fetcher and nopriv_fetcher logic, more flexible and secure
+- default output option changed to echo
+- better fetcher and nopriv_fetcher logic, more flexible and secure
 - better frontend cache management
 	- separated rules and better logic for priv and nopriv caches
 	- ocaVars frontend_cache_priv variable changed to frontendCachePriv

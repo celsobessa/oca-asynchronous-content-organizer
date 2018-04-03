@@ -142,11 +142,11 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
     	if ( 'bypass' === $function_name ){
 	    	$response = 'bypass';
     	}
-    	if ( isset( $_POST['function_output'] ) && 'echo' === $_POST['function_output'] ){
+    	if ( isset( $_POST['function_output'] ) && 'return' !== $_POST['function_output'] ){
 			ob_start();
 		}
 		$response = call_user_func_array( $function_name, $this->function_args );
-    	if ( isset( $_POST['function_output'] ) && 'echo' === $_POST['function_output'] ){
+    	if ( isset( $_POST['function_output'] ) && 'return' !== $_POST['function_output'] ){
 			$response = ob_get_clean();
 		}
 		$response = apply_filters( 'Oca/Content_Fetcher/Fetcher_Response', $response, $function_name, $this->function_args );
@@ -170,11 +170,11 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
     	if ( 'bypass' === $function_name ){
 	    	$response = 'bypass';
     	}
-    	if ( isset( $_POST['nopriv_function_output'] ) && 'echo' === $_POST['nopriv_function_output'] ){
+    	if ( isset( $_POST['nopriv_function_output'] ) && 'return' !== $_POST['nopriv_function_output'] ){
 			ob_start();
 		}
 		$response = call_user_func_array( $function_name, $this->function_args );
-    	if ( isset( $_POST['nopriv_function_output'] ) && 'echo' === $_POST['nopriv_function_output'] ){
+    	if ( isset( $_POST['nopriv_function_output'] ) && 'return' !== $_POST['nopriv_function_output'] ){
 			$response = ob_get_clean();
 		}
 		$response = apply_filters( 'Oca/Content_Fetcher/Nopriv_Fetcher_Response', $response, $function_name, $this->function_args );
