@@ -56,7 +56,7 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 		- Logged in contente (change menu, change sidebar, widgets,etc)
 		- Membership plugins support
 
-## 0.5.0 - 2018-04-03
+## [0.5.0] - 2018-04-03
 
 ### Added
 - README.md
