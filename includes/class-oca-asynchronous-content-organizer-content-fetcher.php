@@ -74,6 +74,7 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	private $backend_cache;
 
 	/**
+	 * TODO Deprecate
 	 * The cache behavior for the content in frontend.
 	 *
 	 * Indicates if the content returned by the function should be cached in frontend. The default is true.
@@ -83,8 +84,6 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * @var 		bool 			$frontend_cache;    The cache behavior for the content: true (default) or false.
 	 */
 	private $frontend_cache;
-
-	public $response_status;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -136,21 +135,24 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 * @since    0.2.6 added bypass support
 	 */
 	public function fetcher() {
-    	$function_name = $_POST['function_name'];
+		$function_name = $_POST['function_name'];
+		//$user_id = get_current_user_id();
+		$response = '';
 		$this->function_args = $_POST['function_args'];
     	if ( 'bypass' === $function_name ){
-    		$response = 'bypass';
-    		echo $response;
-			die();
+	    	$response = 'bypass';
     	}
-    	if ( isset( $_POST['function_output'] ) && 'return' === $_POST['function_output'] ){
-			$response = call_user_func_array( $function_name, $this->function_args );
-    	}
-    	else {
-	    	ob_start();
-			call_user_func_array( $function_name, $this->function_args );
+    	if ( isset( $_POST['function_output'] ) && 'return' !== $_POST['function_output'] ){
+			ob_start();
+		}
+		$response = call_user_func_array( $function_name, $this->function_args );
+    	if ( isset( $_POST['function_output'] ) && 'return' !== $_POST['function_output'] ){
 			$response = ob_get_clean();
-    	}
+		}
+		$response = apply_filters( 'Oca/Content_Fetcher/Fetcher_Response', $response, $function_name, $this->function_args );
+		if ( true === OCA_SECURE_MODE ) {
+			$response = wp_kses($response);
+		}
 		echo $response;
 		die();
 	}
@@ -163,23 +165,34 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 	 */
 	public function nopriv_fetcher() {
 		$function_name = $_POST['nopriv_function_name'];
-    	$this->function_args = $_POST['nopriv_function_args'];
+		$response = '';
+		$this->function_args = $_POST['nopriv_function_args'];
     	if ( 'bypass' === $function_name ){
-	    	echo 'bypass';
-			die();
+	    	$response = 'bypass';
     	}
-    	if ( isset( $_POST['nopriv_function_output'] ) && 'return' === $_POST['nopriv_function_output'] ){
-			echo call_user_func_array( $function_name, $this->function_args );
-    	}
-    	else {
-			call_user_func_array( $function_name, $this->function_args );
-    	}
+    	if ( isset( $_POST['nopriv_function_output'] ) && 'return' !== $_POST['nopriv_function_output'] ){
+			ob_start();
+		}
+		$response = call_user_func_array( $function_name, $this->function_args );
+    	if ( isset( $_POST['nopriv_function_output'] ) && 'return' !== $_POST['nopriv_function_output'] ){
+			$response = ob_get_clean();
+		}
+		$response = apply_filters( 'Oca/Content_Fetcher/Nopriv_Fetcher_Response', $response, $function_name, $this->function_args );
+		if ( true === OCA_SECURE_MODE ) {
+			$response = wp_kses($response);
+		}
+		echo $response;
 		die();
 	}
 
 	public function ajax_check_user_logged_in() {
-		echo is_user_logged_in() ? 'priv' : 'nopriv' ;
-		die();
+		$user_status = is_user_logged_in() ? 'priv' : 'nopriv' ;
+		$user_data = apply_filters( 'Oca/Content_Fetcher/User_Data', '');
+		$user_info = array(
+			'userStatus'	=> $user_status,
+			'userData'		=> $user_data
+		);
+		wp_send_json_success( $user_info );
 	}
 
 }

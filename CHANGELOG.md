@@ -14,18 +14,17 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Roadmap
 
-- cache management
+- improve cache management
 	- cache management logic
+	- backend caching
 - security, sanitization and validation
 	- php
 	- js
-- Optimize and improve logged in check
 - drop jquery
 	- use chris ferdinandi atomic or other library
-- backend caching
 - better front end caching (maybe use Mozilla Forage)
 - better "loading content" placeholder/behavior
-	- early loading if localStorage or maybe using Web Worker / Service Workder
+	- early loading if localStorage is supporte or maybe use Web Worker / Service Workder
 		- https://addyosmani.com/basket.js/
 		- https://www.smashingmagazine.com/2016/02/making-a-service-worker/
 		-http://humaan.com/localstorage-is-for-fun/
@@ -48,6 +47,36 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 - javascript localization
 - improve documentation
 - refactor / code improvement
+- modular architecture / addons
+	- Possible Addons
+		- WordPress loops (like twenty-seventeen, twenty-sixteen, etc)
+		- WordPress common content functions (tag cloud, standard widgets, categories list, etc)
+		- Genesis loop (e outras funções Genesis como secondary menu?)
+		- aWoocomerce (e.g shop, shortcodes, loops, upsell, cross-sell)
+		- Logged in contente (change menu, change sidebar, widgets,etc)
+		- Membership plugins support
+
+## [0.5.0] - 2018-04-03
+
+### Added
+- README.md
+- README.txt
+- OCA_SECURE_MODE constant. When on, all output goes through wp_kses
+- 3 new filters: Oca/Content_Fetcher/Fetcher_Response and Oca/Content_Fetcher/Fetcher_Nopriv_Response
+- Changed OCA/Fetcher/User/Data to Oca/Content_Fetcher/User_Data
+- cacheExpiration parameter to ocaVars
+
+### Changed
+- default output option changed to echo
+- better fetcher and nopriv_fetcher logic, more flexible and secure
+- better frontend cache management
+	- separated rules and better logic for priv and nopriv caches
+	- ocaVars frontend_cache_priv variable changed to frontendCachePriv
+	- ocaVars frontend_cache_nopriv variable changed to frontendCacheNopriv
+- improved response from `is_user_logged_in`: now it's an array with `userStatus` ('priv' or 'nopriv') and arbitrary data (with a WP filter)
+- new filter `'Oca/Fetcher/User/Data'` for arbitraty user data in ajax response from `is_user_logged_in` request
+- Improved inline documentation
+- minor tweaks
 
 ## 0.4.1
 
