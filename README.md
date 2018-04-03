@@ -4,7 +4,7 @@
 - Requires at least: 4.8.0
 - Requires PHP: 7.0.0
 - Tested up to: 4.9.3
-- Stable tag: 0.5.0
+- Stable tag: 0.5.1
 - License: GPLv2 or later
 - License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -145,6 +145,44 @@ The inline documentation within `class-oca-asynchronous-content-organizer-queue-
 ```
 
 You can find further information on `frontend_cache_priv` and `frontend_cache_nopriv` parameters in the FAQ below
+
+## CSS Classes for item injection status
+
+OCA adds and/or remove  css classes to container elements in different situations or phases of job processing. This way, you can control the element styling and visibility using CSS depending upon the phase or status of job.
+
+- `oca-waiting`: added when item processing starts;
+- `oca-error`: added when the ajax call returns an error;
+- `oca-loaded`: used when the ajax call is successful;
+- `oca-bypassed`: when the item is bypassed;
+- `oca-unknown-status`: used in certain errors in OCA javascript
+
+You could, for example, hide an element for all users and show it only if the job is done succesfully.
+
+## Filters
+
+OCA comes with 3 filters: `'Oca/Content_Fetcher/User_Data'`, `'Oca/Content_Fetcher/Nopriv_Fetcher_Response'`, and `'Oca/Content_Fetcher/Fetcher_Response'`.
+
+### `'Oca/Content_Fetcher/User_Data'` filter
+
+This filter is used to add arbitrary data to the `data` property of the is_user_logged response. It passes an empty string and is triggered after OCA checks the user status.
+
+```php
+$user_info = array(
+    'userStatus'	=> $user_status,
+    'userData'		=> $user_data
+);
+```
+
+You could use, for example, to send user membership information.
+
+### `'Oca/Content_Fetcher/Nopriv_Fetcher_Response'` filter
+
+This filter is triggered right before the response is sanitized and sent for privileged users, it passes 3 arguments: `$response`, `$function_name` and `$this->function_args`.
+
+### `'Oca/Content_Fetcher/Fetcher_Response'` filter
+
+This filter is triggered right before the response is sanitized and sent for **privileged users**, it passes 3 arguments: `$response`, `$function_name` and `$this->function_args`.
+
 
 ### Examples for how to use OCA - Asynchronous Content Organizer
 
@@ -708,6 +746,7 @@ Say you want to run a Javascript function after the new content arrives. That's 
 ## Browser Compatibility
 
 - TO DO
+
 ## Frequently Asked Questions ##
 
 ### What values are valid for frontend_cache_priv and frontend_cache_nopriv parameters?

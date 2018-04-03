@@ -203,16 +203,19 @@ function ocaProcessItem(item, index, array) {
 
 	// bail if  the user has privileges and function_name is bypass
 	if ( 'priv' === privileges && 'bypass' === item.function_name ){
+		ocaItemIsProcessed(item, 'bypass');
 		return '';
 	}
 
 	// bail if the user has no privileges and nopriv_function_name is bypass;
 	if ( 'nopriv' === privileges && 'bypass' === item.nopriv_function_name ) {
+		ocaItemIsProcessed(item, 'bypass');
 		return '';
 	}
 
 	// bail if the user has no privileges, nopriv_function_name empty and function_name is bypass
 	if ( 'nopriv' === privileges && '' === item.nopriv_function_name && 'bypass' === item.function_name ) {
+		ocaItemIsProcessed(item, 'bypass');
 		return '';
 	}
 
@@ -332,6 +335,9 @@ function ocaItemIsProcessed(item, itemStatus) {
 	} else if ( 'success' === itemStatus) {
 		console.log('oca-success for item = ' + item.jobHash);
 		jQuery( item.container ).addClass( 'oca-loaded') ;
+	} else if ( 'bypass' === itemStatus) {
+		console.log('oca-success for item = ' + item.jobHash);
+		jQuery( item.container ).addClass( 'oca-bypassed') ;
 	} else {
 		console.log('oca-unknown for item = ' + item.jobHash);
 		jQuery( item.container ).addClass( 'oca-unknown-status') ;

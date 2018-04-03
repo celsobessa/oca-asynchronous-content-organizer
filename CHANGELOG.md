@@ -14,9 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Roadmap
 
-- improve cache management
-	- cache management logic
-	- backend caching
+- user status cache management
 - security, sanitization and validation
 	- php
 	- js
@@ -55,6 +53,18 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 		- aWoocomerce (e.g shop, shortcodes, loops, upsell, cross-sell)
 		- Logged in contente (change menu, change sidebar, widgets,etc)
 		- Membership plugins support
+
+## [0.5.1] - 2018-04-03
+
+### Added
+- Added Filter and Oca Status CSS classes to documentation
+- bypassed jobs now adds a css status class to the container (.bypass)
+
+### Changed
+- Roadmap in CHANGELOG.md
+
+### Fixed
+- Changelog inside README.txt
 
 ## [0.5.0] - 2018-04-03
 
