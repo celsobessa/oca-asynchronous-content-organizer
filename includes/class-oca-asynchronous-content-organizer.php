@@ -248,7 +248,6 @@ class Oca_Asynchronous_Content_Organizer {
 	 * @return    object    a Queue Manager instance.
 	 */
 	public function get_manager(){
-		//TODO remove this: echo 'debug get_manager nivel 1';
 		return new Oca_Asynchronous_Content_Organizer_Queue_Manager( $this->get_plugin_name(), $this->get_version() );
 	}
 

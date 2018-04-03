@@ -2,8 +2,8 @@
 // =================================================
 'use strict';
 
-var ls, lsContent, ocaDelayedScripts, ocaQueue, privileges = false, ocaDebug = false, cachePrefix = '', removeCachePrefix = '', setCache = false;
-
+var ls, lsContent, ocaDelayedScripts, ocaQueue, userData, privileges = false, ocaDebug = false, manageCache = true, cachePrefix = '', removeCachePrefix = '', setCache = false, cacheExpiration = 3600;
+console.log('privileges after declaration', privileges);
 function testLocalStorageSet(){
 	if (LocalStorage){
 		console.log('LocalStorage found by testLocalStorageSet');
@@ -67,38 +67,35 @@ function isUserLoggedBak( callback , item ){
 	});
 }*/
 
-
-function isUserLogged() {
-	//info('isUserLogged');
-	//console.info('ocaVars.ajaxUrl', ocaVars.ajaxUrl);
+function ocaInit() {
+	console.info('OcaInit');
+	if ( !ocaVars || 'no queue' === ocaVars.queue){
+		return;
+	}
+	ocaQueue = ocaVars.queue;
+	console.info('ocaQueue', ocaQueue);
 	jQuery.ajax({
 		url: ocaVars.ajaxUrl,
 		data: {
 			action: 'is_user_logged_in',
 		},
 		success: function (response) {
-			console.info('isUserLogged response', response);
-			return response;
+			console.info('OCA checked user status', response);
+			userData = response.data.userData;
+			privileges = response.data.userStatus;
+			console.info('OCA checked user status and privileges equal response.data.status', privileges);
+			if ( false === privileges || 'string' !== typeof privileges) {
+				console.info('OCA privileges false or not string');
+				return;
+			}
+			ocaProcessQueue(ocaQueue);
 		},
 		error: function () {
+			console.info('OCA could not check user status');
 			return false;
 		},
 		timeout: 20000,
 	});
-}
-function ocaInit(){
-	privileges = isUserLogged();
-	//console.info('OcaInit');
-	//console.info('privileges ocaInit', privileges);
-	if ( !ocaVars ){
-		return;
-	}
-	ocaQueue = ocaVars.queue;
-	//console.info('ocaQueue', ocaQueue);
-	if ( 'no queue' === ocaQueue ){
-		return;
-	}
-	ocaProcessQueue(ocaQueue);
 }
 
 function ocaProcessQueue(queue) {
@@ -110,11 +107,55 @@ function ocaProcessQueue(queue) {
 }
 
 var ocaManageCache = function ( item ){
-	//console.info('ocaManageCache init for job = ', item.jobHash);
-	//console.info('item.frontend_cache ', item.frontend_cache );
+	console.info('ocaManageCache init for job = ', item.jobHash);
+	console.info('item.frontendCachePriv ', item.frontendCachePriv);
+	console.info('item.frontendCacheNopriv ', item.frontendCacheNopriv);
+	const cacheRulePriv = item.frontendCachePriv;
+	const cacheRuleNopriv = item.frontendCacheNopriv;
+	console.info('cacheRulePriv ', cacheRulePriv);
+	console.info('cacheRuleNopriv', cacheRuleNopriv);
+	console.info('privileges', privileges);
+	if ( 'priv' === privileges ){
+		cachePrefix = 'priv';
+		removeCachePrefix = 'nopriv';
+	} else {
+		cachePrefix = 'nopriv';
+		removeCachePrefix = 'priv';
+	}
+	console.log('cachePrefix for job ' + item.jobHash + ' = ', cachePrefix);
+	if ( ( 'priv' === privileges && 'purgeonchange' === cacheRuleNopriv ) || ( 'nopriv' === privileges && 'purgeonchange' === cacheRulePriv ) )  {
+		LocalStorage.removeItem('oca-' + removeCachePrefix + '-' + item.jobHash);
+		console.info('LocalStorage.removeItem');
+		console.info('LocalStorage.getItem after removeItem oca-' + removeCachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + removeCachePrefix + '-' + item.jobHash));
+	}
+	if ( true === cacheRulePriv || true === cacheRuleNopriv || 'purgeonchange' === cacheRulePriv || 'purgeonchange' === cacheRuleNopriv ){
+		var cachedHtml = LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash);
+		console.info('cachedHtml = ', cachedHtml);
+		setCache = true;
+		console.info('setCache = ', setCache);
+	} else {
+		var cachedHtml = null;
+		setCache = false;
+		console.info('cachedHtml null ', cachedHtml);
+	}
+
+	if( null !== cachedHtml ){
+		var html = cachedHtml;
+		ocaInjectContent(item.container, item.placement, item.loaderEnable, item.functionName, html);
+		ocaItemIsProcessed(item, 'success');
+		ocaRunCallback(item.callback);
+
+	} else {
+		ocaFetchContent(ocaVars.ajaxUrl, item, setCache, cachePrefix);
+	}
+}
+
+var ocaManageCacheBak = function ( item ){
+	console.info('ocaManageCache init for job = ', item.jobHash);
+	console.info('item.frontend_cache ', item.frontend_cache );
 	const cacheRule = item.frontend_cache.split('|');
-	//console.info('cacheRule ', cacheRule );
-	//console.info('privileges', privileges);
+	console.info('cacheRule ', cacheRule );
+	console.info('privileges', privileges);
 	if ( cacheRule[0] === 'same' ) {
 		cachePrefix = cacheRule[0];
 		removeCachePrefix = '';
@@ -125,21 +166,21 @@ var ocaManageCache = function ( item ){
 		cachePrefix = 'nopriv';
 		removeCachePrefix = 'priv';
 	}
-	//console.log('cachePrefix for job ' + item.jobHash + ' = ', cachePrefix);
+	console.log('cachePrefix for job ' + item.jobHash + ' = ', cachePrefix);
 	if ( cacheRule[0] !== 'same' && 'purge' === cacheRule[1] ) {
 		LocalStorage.removeItem('oca-' + removeCachePrefix + '-' + item.jobHash);
-		//console.info('LocalStorage.removeItem');
-		//console.info('LocalStorage.getItem after removeItem oca-' + removeCachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + removeCachePrefix + '-' + item.jobHash));
+		console.info('LocalStorage.removeItem');
+		console.info('LocalStorage.getItem after removeItem oca-' + removeCachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + removeCachePrefix + '-' + item.jobHash));
 	}
 	if ( cacheRule[0] === 'both' || cacheRule[0] === 'same' || cacheRule[0] === privileges ){
 		var cachedHtml = LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash);
-		//console.info('cachedHtml = ', cachedHtml);
+		console.info('cachedHtml = ', cachedHtml);
 		setCache = true;
-		//console.info('setCache = ', setCache);
+		console.info('setCache = ', setCache);
 	} else {
 		var cachedHtml = null;
 		setCache = false;
-		//console.info('cachedHtml null ', cachedHtml);
+		console.info('cachedHtml null ', cachedHtml);
 	}
 
 	if( null !== cachedHtml ){
@@ -154,30 +195,61 @@ var ocaManageCache = function ( item ){
 }
 
 function ocaProcessItem(item, index, array) {
-	//console.info('ocaProcessItem init');
-	//console.info('ocaProcessItem item.frontend_cache ', item.frontend_cache);
+	console.info('ocaProcessItem init');
+	console.info('ocaProcessItem item.frontendCachePriv ', item.frontendCachePriv);
+	console.info('ocaProcessItem item.frontendCacheNopriv ', item.frontendCacheNopriv);
 	console.info('ocaProcessItem LocalStorage.supportsLocalStorage ', LocalStorage.supportsLocalStorage() );
-	//console.info('ocaProcessItem ocaDebug ', ocaDebug);
+	console.info('ocaProcessItem ocaDebug ', ocaDebug);
 
+	// bail if  the user has privileges and function_name is bypass
+	if ( 'priv' === privileges && 'bypass' === item.function_name ){
+		return '';
+	}
+
+	// bail if the user has no privileges and nopriv_function_name is bypass;
+	if ( 'nopriv' === privileges && 'bypass' === item.nopriv_function_name ) {
+		return '';
+	}
+
+	// bail if the user has no privileges, nopriv_function_name empty and function_name is bypass
+	if ( 'nopriv' === privileges && '' === item.nopriv_function_name && 'bypass' === item.function_name ) {
+		return '';
+	}
+
+	if ( item.cacheExpiration && item.cacheExpiration === parseInt(item.cacheExpiration, 10) ){
+		cacheExpiration = item.cacheExpiration;
+	}
 	jQuery(item.container).addClass('oca-waiting');
 	if ( ocaQueue < 3 && '' !== item.loaderMessageWhile ){
 		item.loaderMessage = item.loaderMessageWhile;
 	}
 	ocaInjectLoader(item.container, item.placement, item.loaderEnable, item.loaderMessage);
-	if ( 'none' !== item.frontend_cache && true === LocalStorage.supportsLocalStorage() && false === ocaDebug ) {
-		//console.log('ocaProcessItem item.frontend_cache !== none');
+
+	// check if item.frontendCacheNopriv or item.frontendCachePriv is not false
+	// check if debug mode is off
+	// check if local storage is supported
+	if ( true === ocaDebug || true !== LocalStorage.supportsLocalStorage() ){
+		manageCache = false;
+	}
+	if ( false === item.frontendCacheNopriv && 'nopriv' === privileges ) {
+		manageCache = false;
+	}
+	if ( false === item.frontendCachePriv && 'priv' === privileges) {
+		manageCache = false;
+	}
+	if ( manageCache === true ){
+		console.info('manageCache === true');
 		ocaManageCache(item);
-		//isUserLogged(ocaManageCache, item);
 	} else {
-		//console.error('ocaProcessItem item.frontend_cache equals none or localStorage not supported');
+		console.info('manageCache !== true');
 		ocaFetchContent(ocaVars.ajaxUrl, item, false);
 	}
 }
 
 function ocaFetchContent(ajaxUrl, item, setCache, cachePrefix) {
-	//console.info('ocaFetchContent of jobHash', item.jobHash);
-	//console.info('setCache in ocaFetchContent', setCache);
-	//console.info('cachePrefix in ocaFetchContent', cachePrefix);
+	console.info('ocaFetchContent of jobHash', item.jobHash);
+	console.info('setCache in ocaFetchContent', setCache);
+	console.info('cachePrefix in ocaFetchContent', cachePrefix);
 	setCache = setCache || false;
 	cachePrefix = cachePrefix || '';
 	jQuery.ajax({
@@ -193,20 +265,22 @@ function ocaFetchContent(ajaxUrl, item, setCache, cachePrefix) {
 			nopriv_function_output: item.noprivFunctionOutput,
 		},
 		success: function( response ) {
-			//console.info('ajax success for item.jobHash ' + item.jobHash);
-			//console.info('cachePrefix in ajax success', cachePrefix);
-			//console.info('setCache in ajax success', setCache);
-			//console.info('response', response);
+			console.info('ajax success for item.jobHash ' + item.jobHash);
+			console.info('cachePrefix in ajax success', cachePrefix);
+			console.info('setCache in ajax success', setCache);
+			console.info('response', response);
 			ocaInjectContent(item.container, item.placement, item.loaderEnable, item.functionName, response);
 
 			//Create JSON string for storage
 			var jobStorage = response;
-			//console.log('setCache status for ajax success' + setCache);
+			console.log('setCache status for ajax success' + setCache);
 			if( true === setCache ){
-				//console.log('setCache true');
-				LocalStorage.setItem('oca-' + cachePrefix + '-' + item.jobHash, jobStorage, 3600);
+				console.log('setCache true');
+				LocalStorage.setItem('oca-' + cachePrefix + '-' + item.jobHash, jobStorage, cacheExpiration);
+				console.info('localStorage maybe set for ' + 'oca-' + cachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash));
+			} else {
+				console.info('localStorage NOT set for ' + 'oca-' + cachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash));
 			}
-			//console.info('localStorage maybe set for ' + 'oca-' + cachePrefix + '-' + item.jobHash, LocalStorage.getItem('oca-' + cachePrefix + '-' + item.jobHash));
 			ocaRunCallback(item.callback);
 			ocaItemIsProcessed(item, 'success');
 		},
@@ -253,23 +327,27 @@ function ocaItemIsProcessed(item, itemStatus) {
 	var itemStatus = itemStatus || '';
 	jQuery( item.container ).removeClass( 'oca-waiting' );
 	if ('error' === itemStatus) {
-		//console.log('oca-error for item = ' + item.jobHash);
+		console.log('oca-error for item = ' + item.jobHash);
 		jQuery( item.container ).addClass( 'oca-error' );
 	} else if ( 'success' === itemStatus) {
-		//console.log('oca-success for item = ' + item.jobHash);
+		console.log('oca-success for item = ' + item.jobHash);
 		jQuery( item.container ).addClass( 'oca-loaded') ;
 	} else {
-		//console.log('oca-unknown for item = ' + item.jobHash);
+		console.log('oca-unknown for item = ' + item.jobHash);
 		jQuery( item.container ).addClass( 'oca-unknown-status') ;
 	}
 }
 function ocaRunCallback( callback ){
+	console.log('ocaRunCallback init');
+	console.log('ocaRunCallback callback =', callback);
+	console.log('ocaRunCallback userData =', userData);
 	if ( false === callback ){
 		return;
 	}
 	if (typeof window[callback] === "function"){
-		window[callback]();
+		window[callback](userData);
 	}
+	return;
 }
 if ( window.addEventListener ) {
 	window.addEventListener('load', ocaDelayedScripts, false);

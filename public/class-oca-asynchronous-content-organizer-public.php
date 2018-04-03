@@ -110,7 +110,12 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/oca-asynchronous-content-organizer-public.css', array(), $this->version, 'all' );
+		global $oca_manager;
+		$this->oca_queue = $oca_manager->get_queue();
+		$this->oca_hashes = $oca_manager->get_hashes();
+		if ( !empty( $this->oca_queue ) ){
+			//wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/oca-asynchronous-content-organizer-public.css', array(), $this->version, 'all' );
+		}
 
 	}
 
@@ -143,12 +148,11 @@ class Oca_Asynchronous_Content_Organizer_Public {
 		global $oca_manager;
 		$this->oca_queue = $oca_manager->get_queue();
 		$this->oca_hashes = $oca_manager->get_hashes();
-		//TODO remove this: echo 'debug enqueue scripts invoked oca_queue equals to ' ;
 		if ( !empty( $this->oca_queue ) ){
-			//TODO remove this: echo 'debug enqueue';
 			wp_enqueue_script( $this->plugin_name . '-polyfills', plugin_dir_url( __FILE__ ) . 'js/utilities/polyfills.js', '', $this->version, TRUE );
 			wp_enqueue_script( $this->plugin_name . '-localstorage', plugin_dir_url( __FILE__ ) . 'js/utilities/localstorage.js', '', $this->version, TRUE );
 			wp_enqueue_script( $this->plugin_name . '-atomic', plugin_dir_url( __FILE__ ) . 'js/utilities/atomic.min.js', '', $this->version, TRUE );
+			wp_enqueue_script( $this->plugin_name . 'callback-test', plugin_dir_url( __FILE__ ) . 'js/oca-callback-test.js', array(), $this->version, TRUE );
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/oca-asynchronous-content-organizer-public.js', array( 'jquery', $this->plugin_name . '-polyfills', $this->plugin_name . '-localstorage', $this->plugin_name . '-atomic' ), $this->version, TRUE );
 			wp_localize_script( $this->plugin_name, 'ocaVars', array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
@@ -182,15 +186,17 @@ class Oca_Asynchronous_Content_Organizer_Public {
 				'noprivFunctionName'	=> $job['nopriv_function_name'],
 				'noprivFunctionArgs'	=> $job['nopriv_function_args'],
 				'noprivFunctionOutput'	=> $job['nopriv_function_output'],
-				'backend_cache'        => $job['backend_cache'],
-				'frontend_cache'       => $job['frontend_cache'],
-				'container'            => $job['container'],
-				'trigger'			   => $job['trigger'],
-				'timeout'			   => $job['timeout'],
-				'placement'			   => $job['placement'],
-				'loaderEnable'		   => $job['loaderEnable'],
-				'loaderMessage'		   => $job['loaderMessage'],
-				'callback'			   => $job['callback'],
+				'backend_cache'			=> $job['backend_cache'],
+				'frontendCachePriv'		=> $job['frontend_cache_priv'],
+				'frontendCacheNopriv'	=> $job['frontend_cache_nopriv'],
+				'cacheExpiration'		=> $job['cache_expiration'],
+				'container'            	=> $job['container'],
+				'trigger'			   	=> $job['trigger'],
+				'timeout'			   	=> $job['timeout'],
+				'placement'			   	=> $job['placement'],
+				'loaderEnable'		   	=> $job['loaderEnable'],
+				'loaderMessage'		   	=> $job['loaderMessage'],
+				'callback'			   	=> $job['callback'],
 			);
 			$index++;
 		}
