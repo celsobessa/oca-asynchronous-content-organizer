@@ -140,7 +140,8 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 		$response = '';
 		$this->function_args = $_POST['function_args'];
     	if ( 'bypass' === $function_name ){
-	    	$response = 'bypass';
+	    	echo $response = 'bypass';
+			die();
     	}
     	if ( isset( $_POST['function_output'] ) && 'return' !== $_POST['function_output'] ){
 			ob_start();
@@ -168,7 +169,8 @@ class Oca_Asynchronous_Content_Organizer_Content_Fetcher {
 		$response = '';
 		$this->function_args = $_POST['nopriv_function_args'];
     	if ( 'bypass' === $function_name ){
-	    	$response = 'bypass';
+	    	echo $response = 'bypass';
+			die();
     	}
     	if ( isset( $_POST['nopriv_function_output'] ) && 'return' !== $_POST['nopriv_function_output'] ){
 			ob_start();
